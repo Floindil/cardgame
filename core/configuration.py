@@ -1,4 +1,4 @@
 class Configuration:
-    DISPLAYSIZE = (1920,1080)
+    DISPLAYSIZE = (1200,750)
     TITLE = "Cardgame"
     FPS = 60
