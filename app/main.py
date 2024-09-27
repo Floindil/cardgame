@@ -1,5 +1,5 @@
 import pygame
-from core.gameloop import Gameloop
+from src.core.Gameloop import Gameloop
 
 gameloop = Gameloop()
 pygame.init()

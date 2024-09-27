@@ -1,5 +1,5 @@
 
-from resources.components.Component import Component
+from src.resources.components.Component import Component
 
 class Card(Component):
 

@@ -1,6 +1,6 @@
-from resources.assets.AssetManager import AssetManager
-from resources.components.Zone import Zone
-from scenes.Scene import Scene
+from src.resources.assets.AssetManager import AssetManager
+from src.resources.components.Zone import Zone
+from src.scenes.Scene import Scene
 
 class Cardgame(Scene):
 

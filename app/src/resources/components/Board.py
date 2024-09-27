@@ -1,6 +1,6 @@
 import pygame
-from resources.components.Zone import Zone
-from resources.components.Component import Component
+from src.resources.components.Zone import Zone
+from src.resources.components.Component import Component
 
 class Board(Component):
 

@@ -1,4 +1,4 @@
-from scenes.Scene import Scene
+from src.scenes.Scene import Scene
 
 class SceneManager:
 

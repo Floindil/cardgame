@@ -1,8 +1,9 @@
 import pygame
-from core.Eventhandler import Eventhandler
-from core.Renderer import Renderer
-from core.Configuration import Configuration as CFG
-from scenes.Cardgame import Cardgame
+from src.core.Eventhandler import Eventhandler
+from src.core.Renderer import Renderer
+from src.core.Configuration import Configuration as CFG
+from src.scenes.Cardgame import Cardgame
+from src.scenes.Scene import Scene
 
 class Gameloop:
 
@@ -10,6 +11,7 @@ class Gameloop:
     renderer: Renderer
     running: bool
     clock: pygame.time.Clock
+    scene: Scene
 
     def __init__(self) -> None:
         self.clock = pygame.time.Clock()

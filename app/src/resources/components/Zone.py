@@ -1,7 +1,7 @@
 import pygame
-from core.Configuration import Card as CS
-from resources.components.Card import Card
-from resources.components.Component import Component
+from src.core.Configuration import Card as CS
+from src.resources.components.Card import Card
+from src.resources.components.Component import Component
 
 class Zone(Component):
 

@@ -1,5 +1,5 @@
 import pygame
-from core.statics import Paths
+from src.core.Configuration import Paths
 
 class AssetManager:
     """

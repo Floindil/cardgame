@@ -1,7 +1,7 @@
 import pygame
-from core.Configuration import Configuration as CFG
-from resources.assets.AssetManager import AssetManager
-from resources.components.Component import Component
+from src.core.Configuration import Configuration as CFG
+from src.resources.assets.AssetManager import AssetManager
+from src.resources.components.Component import Component
 
 class Scene:
 

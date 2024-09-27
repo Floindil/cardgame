@@ -1,7 +1,7 @@
 import pygame
-from core.Configuration import Configuration as CFG
-from resources.components.Component import Component
-from scenes.Scene import Scene
+from src.core.Configuration import Configuration as CFG
+from src.resources.components.Component import Component
+from src.scenes.Scene import Scene
 
 
 class Renderer:
