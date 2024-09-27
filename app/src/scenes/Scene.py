@@ -4,15 +4,34 @@ from src.resources.assets.AssetManager import AssetManager
 from src.resources.components.Component import Component
 
 class Scene:
+    """
+    The Scene class is used as a base for other Scene Objects
+    like menues and gamescreens.
+    """
 
     components: list[Component]
+    assetManager: AssetManager
+    surface: pygame.Surface
 
     def __init__(self) -> None:
+        """
+        Creates a Scene object and initializes the surface,
+        assetManager and components variables
+        """
         self.surface = pygame.Surface(CFG.DISPLAYSIZE)
         self.assetManager = AssetManager()
         self.components = []
 
+    def start() -> None:
+        """
+        Defines the behaviour of the Scene, when it us started.
+        """
+        pass
+
     def addComponent(self, component: Component) -> None:
+        """
+        Adds a Component Object to the components list of the Scene.
+        """
         self.components.append(component)
 
     def getComponentsToRender(self) -> list[Component]:

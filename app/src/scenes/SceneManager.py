@@ -1,29 +1,64 @@
 from src.scenes.Scene import Scene
 
 class SceneManager:
+    """
+    The SceneManager provides functionalities to change Scenes.
+    """
 
-    _active_scene: Scene
-    _previous_scene: Scene
-    _main_menu: Scene
+    activeScene: Scene
+    previousScene: Scene
+    menuScene: Scene
+    newScene: Scene
+    menu: bool
 
-    def __init__(self) -> None:
-        pass
+    def __init__(self, startScene: Scene) -> None:
+        """
+        Creates a SceneManager Object and sets the starting Scene.
+        """
+        self.activeScene = startScene
+        self.previousScene = None
+        self.newScene = None
+        self.menu = False
 
-    def startNewScene(self, scene: Scene) -> None:
-        self._previous_scene = self._active_scene
-        self._active_scene = scene
+    def setNewScene(self, scene: Scene) -> None:
+        """
+        Takes a Scene to set as the new Scene. If there is a  new Scene,
+        the Scene will be changed in the next update of the SceneManager.
+        """
+        self.newScene = scene
 
-        self._active_scene.start()
+    def startMenu(self) -> None:
+        """
+        Stores the active Scene in the previous Scene variable
+        and sets the menu Scene as the active Scene.
+        Once the menu is left, the previous scene will be set
+        as active again.
+        """
+        self.previousScene = self.activeScene
+        self.activeScene = self.menuScene
 
-    def startPreviousScene(self) -> None:
-        previous_scene = self._active_scene
-        self._active_scene = self._previous_scene
-        self._previous_scene = previous_scene
+    def endMenu(self) -> None:
+        """
+        Sets the previous Scene (active Scene when the menu was started)
+        to the active Scene and set the previousScene
+        variable to None to indicate, that the menu is closed.
+        """
+        self.activeScene = self.previousScene
+        self.previousScene = None
 
-        self._active_scene.start()
+    def update(self) -> None:
+        """
+        If the new Scene flag is active, the next Scene will be set
+        to the active Scene and then, together with the new Scene flag,
+        be cleared.
+        Checks, if the menu should be started or ended.
+        """
+        if self.newScene:
+            self.activeScene = self.newScene
+            self.newScene = None
 
-    def startMainMenu(self) -> None:
-        self._previous_scene = self._active_scene
-        self._active_scene = self._main_menu
+        if self.menu and not self.previousScene:
+            self.startMenu()
 
-        self._active_scene.start()
+        elif not self.menu and self.previousScene:
+            self.endMenu()

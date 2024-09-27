@@ -5,6 +5,6 @@ gameloop = Gameloop()
 pygame.init()
 
 while gameloop.running:
-    gameloop.run()
+    gameloop.update()
 
 pygame.quit()
