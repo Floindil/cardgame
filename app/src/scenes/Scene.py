@@ -1,6 +1,6 @@
 import pygame
-from core.configuration import Configuration as CFG
-from resources.assets.assethandler import Assethandler as AH
+from core.Configuration import Configuration as CFG
+from resources.assets.AssetManager import AssetManager
 from resources.components.Component import Component
 
 class Scene:
@@ -9,7 +9,11 @@ class Scene:
 
     def __init__(self) -> None:
         self.surface = pygame.Surface(CFG.DISPLAYSIZE)
-        self.assethandler = AH()
+        self.assetManager = AssetManager()
+        self.components = []
+
+    def addComponent(self, component: Component) -> None:
+        self.components.append(component)
 
     def getComponentsToRender(self) -> list[Component]:
         """
@@ -32,3 +36,4 @@ class Scene:
                             break
                 else:
                     componentsToRender.append(c)
+        return componentsToRender

@@ -1,7 +1,8 @@
 import pygame
-from core.eventhandler import Eventhandler
-from core.rendering import Renderer
-from core.configuration import Configuration as CFG
+from core.Eventhandler import Eventhandler
+from core.Renderer import Renderer
+from core.Configuration import Configuration as CFG
+from scenes.Cardgame import Cardgame
 
 class Gameloop:
 
@@ -15,6 +16,7 @@ class Gameloop:
         self.eventhandler = Eventhandler()
         self.renderer = Renderer()
         self.running = True
+        self.scene = Cardgame()
 
     def run(self) -> None:
 
@@ -22,7 +24,7 @@ class Gameloop:
 
         self.running = self.eventhandler.run(pygame.event.get())
 
-        self.renderer.run()
+        self.renderer.run(self.scene)
 
     def stop(self):
         self.running = False

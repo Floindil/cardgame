@@ -1,6 +1,6 @@
-from scene import Scene
+from scenes.Scene import Scene
 
-class SceneHandler:
+class SceneManager:
 
     _active_scene: Scene
     _previous_scene: Scene

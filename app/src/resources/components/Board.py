@@ -1,9 +1,8 @@
 import pygame
-from assets.board.zone import Zone
-from assets.board.statics import Board as B
-from assets.asset import Asset
+from resources.components.Zone import Zone
+from resources.components.Component import Component
 
-class Board(Asset):
+class Board(Component):
 
     surface: pygame.Surface
     zones: list[Zone]
