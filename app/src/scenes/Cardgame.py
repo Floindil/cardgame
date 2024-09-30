@@ -8,4 +8,4 @@ class Cardgame(Scene):
         super().__init__()
 
         zone1 = Zone(100, 100)
-        self.addComponent(zone1)
+        self.add_component(zone1)

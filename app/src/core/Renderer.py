@@ -6,25 +6,23 @@ from src.scenes.Scene import Scene
 
 class Renderer:
     
-    display: pygame.Surface
+    __display: pygame.Surface
+    __surface: pygame.Surface
 
     def __init__(self) -> None:
-        self.display = pygame.display.set_mode(CFG.DISPLAYSIZE)
+        self.__display = pygame.display.set_mode(CFG.DISPLAYSIZE)
         pygame.display.set_caption(CFG.TITLE)
-        self.surface = pygame.Surface(CFG.DISPLAYSIZE)
-        self.surface.fill("green")
+        self.__surface = pygame.Surface(CFG.DISPLAYSIZE)
+        self.__surface.fill("black")
 
-    def run(self, scene: Scene):
-        ctr: list[Component] = scene.getComponentsToRender()
-        if ctr:
-            for c in ctr:
-                if c.imageName:
-                    image = scene.assetManager.getImage(c.imageName)
-                else:
-                    image = c.image
+    def run(self, rendering_context: list[tuple[pygame.Surface, tuple[int, int]]]) -> None:
+        if rendering_context:
+            for c in rendering_context:
+                image = c[0]
+                location = c[1]
                 if image:
-                    self.surface.blit(image, c.location)
+                    self.__surface.blit(image, location)
 
-        self.display.blit(self.surface, (0,0))
+        self.__display.blit(self.__surface, (0,0))
         
         pygame.display.flip()
