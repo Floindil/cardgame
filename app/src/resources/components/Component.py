@@ -39,6 +39,10 @@ class Component:
     @property
     def size(self) -> tuple[int, int]:
         return (self._rect.width, self._rect.height)
+    
+    @property
+    def center(self) -> tuple[int, int]:
+        return (self._rect.centerx, self._rect.centery)
 
     @size.setter
     def size(self, width: int, height: int) -> None:

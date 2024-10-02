@@ -25,7 +25,9 @@ class Gameloop:
         Manages the game flow and quits the game, when asked to.
         """
         self.__clock.tick(CFG.FPS)
-        self.__running = self.__eventhandler.run(pygame.event.get())
+        if not self.__eventhandler.run(pygame.event.get()):
+            self.__running = False
+        print(self.__eventhandler.pressed_keys)
         self.__sceneManager.update()
         self.__renderer.run(self.rendering_context)
 
@@ -40,8 +42,3 @@ class Gameloop:
     def running(self) -> bool:
         """Public getter for the running attribute."""
         return self.__running
-
-    @running.setter
-    def running(self, value: bool) -> None:
-        """Public setter for the running attribute."""
-        self.__running = value
