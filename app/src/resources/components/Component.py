@@ -61,6 +61,11 @@ class Component:
     def location(self) -> pygame.Vector2:
         """Returns the top-left position of the component."""
         return pygame.Vector2(self.__rect.topleft)
+    
+    @location.setter
+    def location(self, location: tuple[int, int]):
+        """Sets a new x and y for the Components top-left location"""
+        self.__rect.topleft = (location)
 
     @property
     def size(self) -> tuple[int, int]:

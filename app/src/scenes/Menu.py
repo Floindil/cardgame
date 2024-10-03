@@ -15,9 +15,12 @@ class Menu(Scene):
         super().update()
         if self.counter == 60:
             self.textfield.text = "Changed Text"
+            self.textfield.location = (200, 200)
         if self.counter == 120:
             self.textfield.text = "F*** this is Wild!"
+            self.textfield.location = (300, 300)
         if self.counter == 180:
             self.textfield.text = "TIME TO END THIS!"
+            self.textfield.location = (400, 400)
         if self.counter == 240:
             self.end()
