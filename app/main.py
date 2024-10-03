@@ -1,8 +1,9 @@
 import pygame
 from src.core.Gameloop import Gameloop
 
-gameloop = Gameloop()
 pygame.init()
+
+gameloop = Gameloop()
 
 while gameloop.running:
     gameloop.update()

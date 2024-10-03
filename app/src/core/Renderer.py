@@ -16,6 +16,7 @@ class Renderer:
         self.__surface.fill("black")
 
     def run(self, rendering_context: list[tuple[pygame.Surface, tuple[int, int]]]) -> None:
+        self.__surface.fill("black")
         if rendering_context:
             for c in rendering_context:
                 image = c[0]
@@ -24,5 +25,7 @@ class Renderer:
                     self.__surface.blit(image, location)
 
         self.__display.blit(self.__surface, (0,0))
+
+        pygame.display.update()
         
         pygame.display.flip()

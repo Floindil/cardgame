@@ -6,7 +6,7 @@ class Component:
     object that might be displayed on the screen.
     """
 
-    def __init__(self, width: int, height: int, x: int, y: int) -> None:
+    def __init__(self, x: int, y: int, width: int = 1, height: int = 1) -> None:
         """
         Initializes a Component with the given dimensions and position.
 
@@ -19,7 +19,7 @@ class Component:
         self.RENDER = True
         self.RENDERPRIORITY = 0
         self._rect = pygame.Rect(x, y, width, height)
-        self._image_name = None
+        self._image_name = ""
 
     @property
     def image_name(self) -> str:

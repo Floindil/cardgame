@@ -9,7 +9,7 @@ class Zone(Component):
 
     TAG = "ZONE"
 
-    def __init__(self, width: int, height: int, x: int, y: int) -> None:
+    def __init__(self, x: int, y: int, width: int, height: int) -> None:
         """
         Initializes a Zone with the given position.
         
@@ -17,7 +17,7 @@ class Zone(Component):
             x (int): The x-coordinate of the zone's position.
             y (int): The y-coordinate of the zone's position.
         """
-        super().__init__(width, height, x, y)
+        super().__init__(x, y, width, height)
         self._card = None
 
     def add_card(self, card: Card) -> None:
