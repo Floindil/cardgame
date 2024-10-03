@@ -5,19 +5,23 @@ class Eventhandler:
     Handles events for the game.
     """
 
-    __pressed_keys: list
+    __pressed_buttons: list
+    __mouse_location: tuple[int, int]
 
     def __init__(self) -> None:
         """
         Initializes the Eventhandler.
         """
-        self.__pressed_keys = []
-        # Any initialization for Eventhandler would go here
-        pass
+        self.__pressed_buttons = []
+        self.__mouse_location = (0,0)
 
     @property
-    def pressed_keys(self) -> list:
-        return self.__pressed_keys
+    def mouse_location(self) -> tuple[int, int]:
+        return self.__mouse_location
+
+    @property
+    def pressed_buttons(self) -> list:
+        return self.__pressed_buttons
 
     def run(self, events: list[pygame.event.Event]) -> bool:
         """
@@ -30,25 +34,31 @@ class Eventhandler:
             bool: False if a QUIT event is detected, True otherwise.
         """
         running = True
+        typed_string = ""
+
+        self.__mouse_location = pygame.mouse.get_pos()
+
         for event in events:
+
             if event.type == pygame.QUIT:
                 running = False
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                key_name = f"MB{event.button}"
-                self.__pressed_keys.append(key_name)
+                self.__pressed_buttons = pygame.mouse.get_pressed()
 
             if event.type == pygame.MOUSEBUTTONUP:
-                key_name = f"MB{event.button}"
-                self.__pressed_keys.remove(key_name)
+                self.__pressed_buttons = pygame.mouse.get_pressed()
 
             if event.type == pygame.KEYDOWN:
-                key_name = pygame.key.name(event.key)
-                self.__pressed_keys.append(key_name)
+                if event.key == pygame.K_BACKSPACE:
+                    typed_string += "//<"
+                elif event.key == pygame.K_DELETE:
+                    typed_string += "//>"
+                elif event.key == pygame.K_RETURN:
+                    typed_string += "//!"
+                elif event.key == pygame.K_ESCAPE:
+                    typed_string += "//?"
+                else:
+                    typed_string += event.unicode
 
-            if event.type == pygame.KEYUP:
-                key_name = pygame.key.name(event.key)
-                self.__pressed_keys.remove(key_name)
-
-        return running
-
+        return running, typed_string

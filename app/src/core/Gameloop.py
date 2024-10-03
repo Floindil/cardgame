@@ -25,17 +25,21 @@ class Gameloop:
         Manages the game flow and quits the game, when asked to.
         """
         self.__clock.tick(CFG.FPS)
-        if not self.__eventhandler.run(pygame.event.get()):
-            self.__running = False
-        print(self.__eventhandler.pressed_keys)
+        running, typed_string = self.__eventhandler.run(pygame.event.get())
+
+        if not running:
+            self.stop()
+
         self.__sceneManager.update()
         self.__renderer.run(self.rendering_context)
 
     def stop(self):
+        """Sets the running attribute to False"""
         self.__running = False
 
     @property
     def rendering_context(self) -> list[tuple[pygame.Surface, tuple[int, int]]]:
+        """Public getter for the rendering context."""
         return self.__sceneManager.get_rendering_context()
 
     @property
