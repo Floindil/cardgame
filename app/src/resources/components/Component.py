@@ -5,6 +5,12 @@ class Component:
     The Component class is used as a base for every
     object that might be displayed on the screen.
     """
+    RENDER: bool
+    RENDERPRIORITY: int
+    _image: pygame.Surface
+    __rect: pygame.Rect
+    __image_name: str
+    __update: bool
 
     def __init__(self, x: int, y: int, width: int = 1, height: int = 1) -> None:
         """
@@ -18,31 +24,51 @@ class Component:
         """
         self.RENDER = True
         self.RENDERPRIORITY = 0
-        self._rect = pygame.Rect(x, y, width, height)
-        self._image_name = ""
+        self.__rect = pygame.Rect(x, y, width, height)
+        self.__image_name = ""
+        self._image = pygame.Surface((1,1))
+        self.__update = False
+
+    @property
+    def update(self) -> bool:
+        """The update flag indicates, that the Component has been changed."""
+        return self.__update
+    
+    def _set_update(self) -> None:
+        """Sets the update variable to True"""
+        self.__update = True
+    
+    def resetUpdate(self) -> None:
+        """Sets the update variable to False"""
+        self.__update = False
 
     @property
     def image_name(self) -> str:
         """Returns the name of the image associated with this component."""
-        return self._image_name
+        return self.__image_name
 
     @image_name.setter
     def image_name(self, name: str) -> None:
         """Sets the name of the image associated with this component."""
-        self._image_name = name
+        self.__image_name = name
+
+    @property
+    def image(self) -> pygame.Surface:
+        """Returns the image of the associated Textfield object."""
+        return self._image
 
     @property
     def location(self) -> pygame.Vector2:
         """Returns the top-left position of the component."""
-        return pygame.Vector2(self._rect.topleft)
+        return pygame.Vector2(self.__rect.topleft)
 
     @property
     def size(self) -> tuple[int, int]:
-        return (self._rect.width, self._rect.height)
+        return (self.__rect.width, self.__rect.height)
     
     @property
     def center(self) -> tuple[int, int]:
-        return (self._rect.centerx, self._rect.centery)
+        return (self.__rect.centerx, self.__rect.centery)
 
     @size.setter
     def size(self, width: int, height: int) -> None:
@@ -53,7 +79,7 @@ class Component:
             width (int): The new width of the component.
             height (int): The new height of the component.
         """
-        self._rect.size = (width, height)
+        self.__rect.size = (width, height)
 
     def get_top_left(self) -> pygame.Vector2:
         """
@@ -62,4 +88,4 @@ class Component:
         Returns:
             pygame.Vector2: The top-left position of the component.
         """
-        return pygame.Vector2(self._rect.topleft)
+        return pygame.Vector2(self.__rect.topleft)

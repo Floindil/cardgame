@@ -6,23 +6,28 @@ class SceneManager:
     """
     The SceneManager provides functionalities to change Scenes.
     """
-    _active_scene: Scene
-    _previous_scene: Scene
-    _menu_scene: Scene
-    _new_scene: Scene
-    _menu: bool
+    __active_scene: Scene
+    __previous_scene: Scene
+    __menu_scene: Scene
+    __new_scene: Scene
+    __menu: bool
+
+    @property
+    def stop(self) -> bool:
+        """Returns True, if the Game should be ended from the Scene"""
+        return self.__active_scene.stop
 
     def __init__(self) -> None:
         """
         Creates a SceneManager Object and sets the starting Scene.
         """
-        self._menu_scene = Menu()
-        self._active_scene = self._menu_scene
-        self._previous_scene = None
-        self._new_scene = None
-        self._menu = False
+        self.__menu_scene = Menu()
+        self.__active_scene = self.__menu_scene
+        self.__previous_scene = None
+        self.__new_scene = None
+        self.__menu = False
 
-    def set_new_scene(self, scene: Scene) -> None:
+    def set__new_scene(self, scene: Scene) -> None:
         """
         Takes a Scene to set as the new Scene. If there is a  new Scene,
         the Scene will be changed in the next update of the SceneManager.
@@ -30,26 +35,26 @@ class SceneManager:
         Args:
             scene (Scene): New Scene to be displayed
         """
-        self._new_scene = scene
+        self.__new_scene = scene
 
-    def start_menu(self) -> None:
+    def start__menu(self) -> None:
         """
         Stores the active Scene in the previous Scene variable
         and sets the menu Scene as the active Scene.
         Once the menu is left, the previous scene will be set
         as active again.
         """
-        self._previous_scene = self._active_scene
-        self._active_scene = self._menu_scene
+        self.__previous_scene = self.__active_scene
+        self.__active_scene = self.__menu_scene
 
-    def end_menu(self) -> None:
+    def end__menu(self) -> None:
         """
         Sets the previous Scene (active Scene when the menu was started)
-        to the active Scene and set the _previous_scene
+        to the active Scene and set the __previous_scene
         variable to None to indicate, that the menu is closed.
         """
-        self._active_scene = self._previous_scene
-        self._previous_scene = None
+        self.__active_scene = self.__previous_scene
+        self.__previous_scene = None
 
     def update(self) -> None:
         """
@@ -58,15 +63,17 @@ class SceneManager:
         be cleared.
         Checks, if the menu should be started or ended.
         """
-        if self._new_scene:
-            self._active_scene = self._new_scene
-            self._new_scene = None
+        if self.__new_scene:
+            self.__active_scene = self.__new_scene
+            self.__new_scene = None
 
-        if self._menu and not self._previous_scene:
-            self.start_menu()
+        if self.__menu and not self.__previous_scene:
+            self.start__menu()
 
-        elif not self._menu and self._previous_scene:
-            self.end_menu()
+        elif not self.__menu and self.__previous_scene:
+            self.end__menu()
+
+        self.__active_scene.update()
     
     def get_rendering_context(self) -> list[Component]:
         """
@@ -76,4 +83,4 @@ class SceneManager:
         Returns:
             Components to be rendered to the screen
         """
-        return self._active_scene.get_rendering_context()
+        return self.__active_scene.get_rendering_context()

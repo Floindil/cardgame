@@ -25,7 +25,7 @@ class AssetManager:
             "sounds": {}
         }
 
-    def add_image(self, image_name: str, image: pygame.Surface) -> None:
+    def update_image(self, image_name: str, image: pygame.Surface) -> None:
         if isinstance(image, pygame.Surface):
             self._assets.update({"images": {image_name: image}})
 

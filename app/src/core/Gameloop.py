@@ -25,7 +25,11 @@ class Gameloop:
         Manages the game flow and quits the game, when asked to.
         """
         self.__clock.tick(CFG.FPS)
+
         running, typed_string = self.__eventhandler.run(pygame.event.get())
+
+        if self.__sceneManager.stop:
+            running = False
 
         if not running:
             self.stop()

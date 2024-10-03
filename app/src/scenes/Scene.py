@@ -8,8 +8,10 @@ class Scene:
     The Scene class is used as a base for other Scene Objects
     like menus and game screens.
     """
-    _components: list[Component]
+    __components: list[Component]
     __assetManager: AssetManager
+    __counter: int
+    __stop: bool
 
     def __init__(self) -> None:
         """
@@ -17,7 +19,37 @@ class Scene:
         assetManager, and components variables.
         """
         self.__assetManager = AssetManager()
-        self._components = []
+        self.__components = []
+        self.__counter = 0
+        self.__stop = False
+
+    @property
+    def counter(self) -> int:
+        """
+        Returns the counter of the Scene object. The counter is increased 
+        by 1 with every tick.
+        """
+        return self.__counter
+
+    @property
+    def stop(self) -> bool:
+        """Indicates, if the Game should be stopped."""
+        return self.__stop
+    
+    def end(self) -> None:
+        """Sets the stop variable to True to indicate, that the Game should end."""
+        self.__stop = True
+
+    def update(self) -> None:
+        """
+        Checks the Component for updates and provides them to the managers.\n
+        Increments the counter of the Scene by 1 to allow timed Scene events.
+        """
+        self.__counter += 1
+        for c in self.__components:
+            if c.update:
+                self.__assetManager.update_image(c.image_name, c.image)
+                c.resetUpdate()
 
     def register_image(self, image_name: str, image: pygame.Surface) -> None:
         """
@@ -27,7 +59,7 @@ class Scene:
             image_name (str): The name of the image.
             image (pygame.Surface): The image surface.
         """
-        self.__assetManager.add_image(image_name, image)
+        self.__assetManager.update_image(image_name, image)
 
     def load_asset(self, asset_name: str) -> None:
         """
@@ -64,7 +96,7 @@ class Scene:
             TypeError: If the component is not an instance of Component.
         """
         if isinstance(component, Component):
-            self._components.append(component)
+            self.__components.append(component)
         else:
             raise TypeError("Can only add instances of Component")
 
@@ -80,7 +112,7 @@ class Scene:
         render_context: list[tuple[pygame.Surface, tuple[int, int]]] = []
 
         # Iterate through all the Scene's components
-        for component in self._components:
+        for component in self.__components:
             # Check if the component should be rendered
             if component.RENDER:
                 image = self.__assetManager.get_image(component.image_name)
