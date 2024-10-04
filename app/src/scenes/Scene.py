@@ -48,8 +48,9 @@ class Scene:
         self.__counter += 1
         for c in self.__components:
             if c.update:
-                self.__assetManager.update_image(c.image_name, c.image)
-                c.resetUpdate()
+                if c.image_name in self.__assetManager.images:
+                    self.__assetManager.update_image(c.image_name, c.image)
+                    c.resetUpdate()
 
     def register_image(self, image_name: str, image: pygame.Surface) -> None:
         """

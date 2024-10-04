@@ -9,7 +9,8 @@ class AssetManager:
     Loaded assets will be stored in a dictionary and can be
     returned to use them.
     """
-    _assets: dict
+    __images: dict
+    __sounds: dict
     __path: str 
     __mixer: pygame.mixer
 
@@ -20,14 +21,16 @@ class AssetManager:
         """
         self.__path = Paths.ASSETS
         self.__mixer = pygame.mixer
-        self._assets = {
-            "images": {},
-            "sounds": {}
-        }
+        self.__images = {}
+        self.__sounds = {}
+
+    @property
+    def images(self) -> dict:
+        return self.__images
 
     def update_image(self, image_name: str, image: pygame.Surface) -> None:
         if isinstance(image, pygame.Surface):
-            self._assets.update({"images": {image_name: image}})
+            self.__images.update({image_name: image})
 
     def load_image(self, image_name: str) -> None:
         """
@@ -36,7 +39,7 @@ class AssetManager:
         if image_name.endswith(".png"):
             fileArg = f"{self.__path}images/{image_name}"
             newImage = pygame.image.load(fileArg)
-            self._assets.update({"images": {image_name[:-3]: newImage}})
+            self.__images.update({image_name[:3]: newImage})
         else:
             raise TypeError("must be png file!")
 
@@ -44,8 +47,12 @@ class AssetManager:
         """
         Returns a specific image from the asset dictionary.
         """
-        image = self._assets["images"].get(imageName)
+        image = self.__images.get(imageName)
         return image
+
+    @property
+    def sounds(self) -> dict:
+        return self.__sounds
 
     def load_sound(self, audio_name: str) -> None:
         """
@@ -54,7 +61,7 @@ class AssetManager:
         if audio_name.endswith(".mp3"):
             fileArg = f"{self.__path}sounds/{audio_name}"
             newAudio = self.__mixer.Sound(fileArg)
-            self._assets.update({"sounds": {audio_name[:-3]: newAudio}})
+            self.__sounds.update({audio_name[:-3]: newAudio})
         else:
             raise TypeError("must be mp3 file!")
     
@@ -62,5 +69,5 @@ class AssetManager:
         """
         Returns a specific sound from the asset dictionary.
         """
-        sound = self._assets["sounds"].get(soundName)
+        sound = self.__sounds.get(soundName)
         return sound
