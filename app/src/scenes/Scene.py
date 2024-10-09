@@ -1,6 +1,7 @@
 import pygame
 from src.core.Configuration import Configuration as CFG
 from src.resources.assets.AssetManager import AssetManager
+from src.resources.components.ComponentManager import ComponentManager
 from src.resources.components.Component import Component
 
 class Scene:
@@ -8,18 +9,18 @@ class Scene:
     The Scene class is used as a base for other Scene Objects
     like menus and game screens.
     """
-    __components: list[Component]
     __assetManager: AssetManager
+    __componentManager: ComponentManager
     __counter: int
     __stop: bool
 
     def __init__(self) -> None:
         """
         Creates a Scene object and initializes the surface,
-        assetManager, and components variables.
+        assetManager, componentManager, counter and stop variables.
         """
         self.__assetManager = AssetManager()
-        self.__components = []
+        self.__componentManager = ComponentManager()
         self.__counter = 0
         self.__stop = False
 
@@ -46,10 +47,11 @@ class Scene:
         Increments the counter of the Scene by 1 to allow timed Scene events.
         """
         self.__counter += 1
-        for c in self.__components:
+        for entity in self.__componentManager.components:
+            c: Component = self.__componentManager.components.get(entity)
             if c.update:
-                if c.image_name in self.__assetManager.images:
-                    self.__assetManager.update_image(c.image_name, c.image)
+                if c.ID in self.__assetManager.images:
+                    self.__assetManager.update_image(c.ID, c.image)
                     c.resetUpdate()
 
     def register_image(self, image_name: str, image: pygame.Surface) -> None:
@@ -86,7 +88,7 @@ class Scene:
         """
         pass
 
-    def add_component(self, component: Component) -> None:
+    def register_component(self, component: Component) -> None:
         """
         Adds a Component object to the components list of the Scene.
 
@@ -97,13 +99,25 @@ class Scene:
             TypeError: If the component is not an instance of Component.
         """
         if isinstance(component, Component):
-            self.__components.append(component)
+            self.__componentManager.register(component)
         else:
             raise TypeError("Can only add instances of Component")
+        
+    def get_component(self, ID: str) -> Component:
+        """
+        Uses the ID of a component to return it from the componentManager.
+        
+        Args:
+            ID (str): component ID
+            
+        Returns:
+            component (Component): the component associated with the ID
+        """
+        return self.__componentManager.get(ID)
 
     def get_rendering_context(self) -> list[tuple[pygame.Surface, tuple[int, int]]]:
         """
-        Checks all components in the Scene's components list and prepares
+        Gets the components to render from the componentManager and prepares
         them for rendering based on their render priority.
 
         Returns:
@@ -112,23 +126,26 @@ class Scene:
         """
         render_context: list[tuple[pygame.Surface, tuple[int, int]]] = []
 
-        # Iterate through all the Scene's components
-        for component in self.__components:
-            # Check if the component should be rendered
-            if component.RENDER:
-                image = self.__assetManager.get_image(component.image_name)
-                render_information = (image, component.location, component.RENDERPRIORITY)
+        # Iterate through all the Scene's components that will be rendered
+        for information in self.__componentManager.rendering_context:
 
-                # Insert the component into the list based on render priority
-                inserted = False
-                for i, context in enumerate(render_context):
-                    priority = context[2]
-                    if component.RENDERPRIORITY <= priority:
-                        render_context.insert(i + 1, render_information)
-                        inserted = True
-                        break
+            component_ID = information[0]
+            location = information[1]
+            priority = information[2]
 
-                if not inserted:
-                    render_context.append(render_information)
+            image = self.__assetManager.get_image(component_ID)
+            render_information = (image, location, priority)
+
+            # Insert the component into the list based on render priority
+            inserted = False
+            for i, context in enumerate(render_context):
+                c_priority = context[2]
+                if priority <= c_priority:
+                    render_context.insert(i + 1, render_information)
+                    inserted = True
+                    break
+
+            if not inserted:
+                render_context.append(render_information)
 
         return render_context

@@ -7,16 +7,19 @@ class Component:
     """
     RENDER: bool
     RENDERPRIORITY: int
+    _tag: str
     _image: pygame.Surface
     __rect: pygame.Rect
-    __image_name: str
+    __id: str
     __update: bool
 
-    def __init__(self, x: int, y: int, width: int = 1, height: int = 1) -> None:
+    def __init__(self,id: str, x: int, y: int, width: int = 1, height: int = 1) -> None:
         """
         Initializes a Component with the given dimensions and position.
 
         Args:
+            id (str): ID for the component, used to identify the 
+            component and associated assets.
             width (int): The width of the component.
             height (int): The height of the component.
             x (int): The x-coordinate of the component's position.
@@ -24,8 +27,9 @@ class Component:
         """
         self.RENDER = True
         self.RENDERPRIORITY = 0
+        self._tag = ""
         self.__rect = pygame.Rect(x, y, width, height)
-        self.__image_name = ""
+        self.__id = id
         self._image = pygame.Surface((1,1))
         self.__update = False
 
@@ -33,6 +37,11 @@ class Component:
     def update(self) -> bool:
         """The update flag indicates, that the Component has been changed."""
         return self.__update
+    
+    @property
+    def TAG(self) -> str:
+        """Returns the TAG of the component"""
+        return self._tag
     
     def _set_update(self) -> None:
         """Sets the update variable to True"""
@@ -43,14 +52,14 @@ class Component:
         self.__update = False
 
     @property
-    def image_name(self) -> str:
-        """Returns the name of the image associated with this component."""
-        return self.__image_name
+    def ID(self) -> str:
+        """Returns the ID of the the component."""
+        return self.__id
 
-    @image_name.setter
-    def image_name(self, name: str) -> None:
-        """Sets the name of the image associated with this component."""
-        self.__image_name = name
+    @ID.setter
+    def ID(self, name: str) -> None:
+        """Sets the name of the ID of the component."""
+        self.__id = name
 
     @property
     def image(self) -> pygame.Surface:

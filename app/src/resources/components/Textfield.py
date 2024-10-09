@@ -14,6 +14,7 @@ class Textfield(Component):
 
     def __init__(
             self,
+            id: str,
             text: str,
             x: int,
             y: int,
@@ -34,11 +35,12 @@ class Textfield(Component):
             the standardsize from the configuration will be used
             color (str): if no colot is provided, black will be used
         """
-        super().__init__(x, y)
+        super().__init__(id, x, y)
         self.__text = text
         self.__color = pygame.Color(color)
         self.__size = size
         self.font = font
+        self._tag = "textfield"
 
     @property
     def text(self) -> str:
