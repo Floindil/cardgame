@@ -49,7 +49,7 @@ class ComponentManager:
         for entity in self.__components:
             c: Component = self.__components.get(entity)
             if c.RENDER:
-                context.append((c.ID, c.location, c.RENDERPRIORITY))
+                context.append((c.image_id, c.location, c.RENDERPRIORITY))
         return context
 
     @property

@@ -7,8 +7,6 @@ class Zone(Component):
     The Zone class represents a specific area in the game and inherits from Component.
     """
 
-    TAG = "ZONE"
-
     def __init__(self, x: int, y: int, width: int, height: int) -> None:
         """
         Initializes a Zone with the given position.
@@ -19,6 +17,7 @@ class Zone(Component):
         """
         super().__init__(x, y, width, height)
         self._card = None
+        self._tag = "zone"
 
     def add_card(self, card: Card) -> None:
         """

@@ -2,7 +2,9 @@ import pygame
 from src.core.Configuration import Configuration as CFG
 from src.resources.assets.AssetManager import AssetManager
 from src.resources.components.ComponentManager import ComponentManager
+from src.resources.components.Textfield import Textfield
 from src.resources.components.Component import Component
+from src.resources.components.Button import Button
 
 class Scene:
     """
@@ -68,12 +70,14 @@ class Scene:
             for button in self.__componentManager.buttons:
                 if button.collide_point(mouselocation[0], mouselocation[1]):
                     button.flag = True
+                print(f"flag state down {button.flag}")
 
         if "//u" in event:
             for button in self.__componentManager.buttons:
                 if button.collide_point(mouselocation[0], mouselocation[1]) and button.flag:
-                    button.flag = False
                     button.action()
+                button.flag = False
+                print(f"flag state up {button.flag}")
 
     def register_image(self, image_name: str, image: pygame.Surface) -> None:
         """
@@ -85,9 +89,22 @@ class Scene:
         """
         self.__assetManager.update_image(image_name, image)
 
+    def get_image_size(self, image_id: str):
+        image = self.__assetManager.get_image(image_id)
+        return image.get_size()
+
+    def register_button(self, button: Button):
+        self.register_component(button)
+        self.register_textfield(button.textfield)
+
+    def register_textfield(self, textfield: Textfield) -> None:
+        self.register_component(textfield)
+        self.register_image(textfield.ID, textfield.image)
+
     def load_asset(self, asset_name: str) -> None:
         """
-        Loads an asset (either an image or sound) using the asset manager.
+        Loads an asset (either an image or sound) using the asset manager.\n
+        Directly registers the asset in the AssetManager.
 
         Args:
             asset_name (str): The name of the asset to load.

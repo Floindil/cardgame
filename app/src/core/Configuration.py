@@ -12,7 +12,7 @@ class Paths:
     """
     Holds paths used in the game.
     """
-    ASSETS = "resources/assets/"
+    ASSETS = "app/src/resources/assets/"
 
 class Card:
     """
@@ -22,7 +22,7 @@ class Card:
 
 class Fonts:
     STANDARDFONT = 'Trebuchet MS'
-    STANDARDSIZE = 40
+    STANDARDSIZE = 20
     TREBUCHET = 'Trebuchet MS'
     ARIAL = 'Arial'
     COURIER = 'Courier New'

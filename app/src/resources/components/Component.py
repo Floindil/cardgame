@@ -20,18 +20,27 @@ class Component:
         Args:
             id (str): ID for the component, used to identify the 
             component and associated assets.
-            width (int): The width of the component.
-            height (int): The height of the component.
             x (int): The x-coordinate of the component's position.
             y (int): The y-coordinate of the component's position.
+            width (int): The width of the component.
+            height (int): The height of the component.
         """
         self.RENDER = True
         self.RENDERPRIORITY = 0
-        self._tag = ""
         self.__rect = pygame.Rect(x, y, width, height)
         self.__id = id
-        self._image = pygame.Surface((1,1))
+        self.__image_id = id
         self.__update = False
+        self._image = pygame.Surface((1,1))
+        self._tag = ""
+
+    @property
+    def image_id(self) -> str:
+        return self.__image_id
+    
+    @image_id.setter
+    def image_id(self, id: str):
+        self.__image_id = id
 
     @property
     def update(self) -> bool:
@@ -91,7 +100,7 @@ class Component:
             return False
 
     @size.setter
-    def size(self, width: int, height: int) -> None:
+    def size(self, size: tuple[int, int]) -> None:
         """
         Sets the size of the component.
 
@@ -99,7 +108,7 @@ class Component:
             width (int): The new width of the component.
             height (int): The new height of the component.
         """
-        self.__rect.size = (width, height)
+        self.__rect.size = size
 
     def get_top_left(self) -> pygame.Vector2:
         """

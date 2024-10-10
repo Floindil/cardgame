@@ -10,7 +10,6 @@ class Textfield(Component):
     __text: str
     __font: pygame.font.Font
     __color: pygame.Color
-    __size: int
 
     def __init__(
             self,
@@ -19,7 +18,7 @@ class Textfield(Component):
             x: int,
             y: int,
             font: str = Fonts.STANDARDFONT,
-            size: int = Fonts.STANDARDSIZE,
+            fontsize: int = Fonts.STANDARDSIZE,
             color: str = 'black'
         ) -> None:
         """
@@ -38,7 +37,7 @@ class Textfield(Component):
         super().__init__(id, x, y)
         self.__text = text
         self.__color = pygame.Color(color)
-        self.__size = size
+        self.__fontsize = fontsize
         self.font = font
         self._tag = "textfield"
 
@@ -78,18 +77,18 @@ class Textfield(Component):
             text (str): new text to be displayed
         """
         try:
-            self.__font = pygame.font.SysFont(font, self.size)
+            self.__font = pygame.font.SysFont(font, self.fontsize)
         except ValueError as e:
             print(e)
         self.__create_image()
 
     @property
-    def font_size(self) -> int:
+    def fontsize(self) -> int:
         """Returns the letter size associated with the Textfield object."""
-        return self.__size
+        return self.__fontsize
     
-    @font_size.setter
-    def size(self, size: int) -> None:
+    @fontsize.setter
+    def fontsize(self, size: int) -> None:
         """
         Checks, if the provided size is of type int and sets it to
         the size attribute.\n
@@ -100,7 +99,7 @@ class Textfield(Component):
         """
         if not isinstance(size, int):
             raise TypeError("> Variable must be int!")
-        self.__size = size
+        self.__fontsize = size
         self.__font = pygame.font.SysFont(self.__font, size)
         self.__create_image()
 
@@ -133,4 +132,6 @@ class Textfield(Component):
         color parameter. 
         """
         self._image = self.__font.render(self.__text, True, self.__color)
+        image_size = self._image.get_size()
+        self.size = image_size[0], image_size[1]
         self._set_update()
