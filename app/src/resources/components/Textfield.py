@@ -1,4 +1,5 @@
 import pygame
+from typing import Optional, Type
 
 from src.resources.components.Component import Component
 from src.core.Configuration import Fonts
@@ -14,9 +15,9 @@ class Textfield(Component):
     def __init__(
             self,
             id: str,
-            text: str,
             x: int,
             y: int,
+            text: str = None,
             font: str = Fonts.STANDARDFONT,
             fontsize: int = Fonts.STANDARDSIZE,
             color: str = 'black'
@@ -25,9 +26,11 @@ class Textfield(Component):
         Creates a Textfield object. This object can display any text.
 
         Args:
-            text (str): text that will be displayed
+            id (str): Identifier for the Textfield.
             x (int): x coordinate of the top left corner
             y (int): y coordinate of the top left corner
+            text (str): text that will be displayed, if no text is provided, 
+            the Textfield ID will be used.
             font (str): if no font is provided, the standardfont from
             the configuration will be used
             size (int): size of the letters - if no size is provided, 
@@ -35,6 +38,8 @@ class Textfield(Component):
             color (str): if no colot is provided, black will be used
         """
         super().__init__(id, x, y)
+        if not text:
+            text = id
         self.__text = text
         self.__color = pygame.Color(color)
         self.__fontsize = fontsize

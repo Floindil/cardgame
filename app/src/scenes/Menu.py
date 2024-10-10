@@ -6,18 +6,15 @@ class Menu(Scene):
 
     def __init__(self) -> None:
         super().__init__()
+        self._menuacces = False
 
-        textfield = Textfield("text1", "Main Menu", 100, 100, color = "white")
-        self.register_image(textfield.ID, textfield.image)
-        self.register_component(textfield)
+        textfield = Textfield("MAIN MENU", 100, 100, color = "white", fontsize = 40)
+        self.register_textfield(textfield)
 
-        self.load_asset("button.png")
-        buttonsize = self.get_image_size("button")
-
-        button = Button("START", 100, 300, buttonsize[0], buttonsize[1], image_id = "button")
-        self.register_button(button)
+        textfield = Textfield("inputcontrol", 100, 300, color = "white")
+        self.register_textfield(textfield)
 
     def update(self, event: str, mouselocation: list[int, int]) -> None:
         super().update(event, mouselocation)
-        textfield: Textfield = self.get_component("text1")
+        textfield: Textfield = self.get_component("inputcontrol")
         textfield.text = self.last_event

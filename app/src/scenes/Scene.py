@@ -1,4 +1,6 @@
 import pygame
+from typing import Type, Optional
+
 from src.core.Configuration import Configuration as CFG
 from src.resources.assets.AssetManager import AssetManager
 from src.resources.components.ComponentManager import ComponentManager
@@ -13,9 +15,11 @@ class Scene:
     """
     __assetManager: AssetManager
     __componentManager: ComponentManager
+    __next_scene: Optional[Type['Scene']]
     __counter: int
     __stop: bool
     __event: str
+    _menuacces: bool
 
     def __init__(self) -> None:
         """
@@ -27,6 +31,8 @@ class Scene:
         self.__counter = 0
         self.__stop = False
         self.__event = ""
+        self.__next_scene = None
+        self._menuacces = True
 
     @property
     def counter(self) -> int:
@@ -44,6 +50,14 @@ class Scene:
     def stop(self) -> bool:
         """Indicates, if the Game should be stopped."""
         return self.__stop
+    
+    @property
+    def next_scene(self):
+        return self.__next_scene
+    
+    @next_scene.setter
+    def next_scene(self, new_scene: Optional[type['Scene']]) -> None:
+        self.__next_scene = new_scene
     
     def end(self) -> None:
         """Sets the stop variable to True to indicate, that the Game should end."""
@@ -70,14 +84,12 @@ class Scene:
             for button in self.__componentManager.buttons:
                 if button.collide_point(mouselocation[0], mouselocation[1]):
                     button.flag = True
-                print(f"flag state down {button.flag}")
 
         if "//u" in event:
             for button in self.__componentManager.buttons:
                 if button.collide_point(mouselocation[0], mouselocation[1]) and button.flag:
                     button.action()
                 button.flag = False
-                print(f"flag state up {button.flag}")
 
     def register_image(self, image_name: str, image: pygame.Surface) -> None:
         """

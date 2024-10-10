@@ -1,4 +1,5 @@
 from src.scenes.Scene import Scene
+from src.scenes.Start import Start
 from src.scenes.Menu import Menu
 from src.resources.components.Component import Component
 
@@ -9,7 +10,6 @@ class SceneManager:
     __active_scene: Scene
     __previous_scene: Scene
     __menu_scene: Scene
-    __new_scene: Scene
     __menu: bool
 
     @property
@@ -22,20 +22,9 @@ class SceneManager:
         Creates a SceneManager Object and sets the starting Scene.
         """
         self.__menu_scene = Menu()
-        self.__active_scene = self.__menu_scene
+        self.__active_scene = Start()
         self.__previous_scene = None
-        self.__new_scene = None
         self.__menu = False
-
-    def set__new_scene(self, scene: Scene) -> None:
-        """
-        Takes a Scene to set as the new Scene. If there is a  new Scene,
-        the Scene will be changed in the next update of the SceneManager.
-
-        Args:
-            scene (Scene): New Scene to be displayed
-        """
-        self.__new_scene = scene
 
     def __start_menu(self) -> None:
         """
@@ -63,15 +52,19 @@ class SceneManager:
         be cleared.
         Checks, if the menu should be started or ended.
         """
-        if self.__new_scene:
-            self.__active_scene = self.__new_scene
-            self.__new_scene = None
+        if "//?" in event:
+            if self.__menu:
+                self.__menu = False
+                self.__end_menu()
+            elif self.__active_scene._menuacces:
+                self.__menu = True
+                self.__start_menu()
 
-        if self.__menu and not self.__previous_scene:
-            self.__start_menu()
+        new_scene = self.__active_scene.next_scene
 
-        elif not self.__menu and self.__previous_scene:
-            self.__end_menu()
+        if new_scene:
+            self.__active_scene.next_scene = None
+            self.__active_scene = new_scene
 
         self.__active_scene.update(event, mouselocation)
     

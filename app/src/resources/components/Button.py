@@ -45,7 +45,7 @@ class Button(Component):
         super().__init__(id, x, y, width, height)
         if not text:
             text = self.ID
-        self.__textfield = Textfield(f"{id}_tf", text, 0, 0, color = text_color)
+        self.__textfield = Textfield(f"{id}_tf", 0, 0, text = text, color = text_color)
         self.__textfield.RENDERPRIORITY = self.RENDERPRIORITY + 1
         self.__textfield.location = self.__location_tf
 
