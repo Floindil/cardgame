@@ -54,13 +54,14 @@ class SceneManager:
         Checks, if the menu should be started or ended.
         """
         if "//?" in event:
-            if self.__menu:
-                self.__menu = False
-                self.__end_menu()
-            elif self.__active_scene._menuacces:
-                self.__menu = True
-                self.__start_menu()
-            self.__active_scene.start()
+            if not isinstance(self.__active_scene, Start):
+                if self.__menu:
+                    self.__menu = False
+                    self.__end_menu()
+                elif self.__active_scene._menuacces:
+                    self.__menu = True
+                    self.__start_menu()
+                self.__active_scene.start()
 
         new_scene = self.__active_scene.next_scene
 
