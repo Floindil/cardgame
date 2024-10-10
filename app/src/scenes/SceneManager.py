@@ -5,21 +5,19 @@ from src.resources.components.Component import Component
 
 class SceneManager:
     """
-    The SceneManager provides functionalities to change Scenes.
+    The SceneManager class handles the transitions between different Scenes
+    in the game, including starting, stopping, and managing a menu Scene.
     """
     __active_scene: Scene
     __previous_scene: Scene
     __menu_scene: Scene
     __menu: bool
 
-    @property
-    def stop(self) -> bool:
-        """Returns True, if the Game should be ended from the Scene"""
-        return self.__active_scene.stop
-
     def __init__(self) -> None:
         """
-        Creates a SceneManager Object and sets the starting Scene.
+        Initializes the SceneManager with the starting Scene and menu Scene.
+        Sets the initial active Scene to the starting Scene and initializes
+        the previous Scene and menu flag.
         """
         self.__menu_scene = Menu()
         self.__active_scene = Start()
@@ -27,31 +25,43 @@ class SceneManager:
         self.__menu = False
         self.__active_scene.start()
 
+    @property
+    def stop(self) -> bool:
+        """
+        Returns a boolean indicating if the game should be ended based on
+        the active Scene's stop flag.
+        
+        Returns:
+            bool: True if the game should be stopped, False otherwise.
+        """
+        return self.__active_scene.stop
+
     def __start_menu(self) -> None:
         """
-        Stores the active Scene in the previous Scene variable
-        and sets the menu Scene as the active Scene.
-        Once the menu is left, the previous scene will be set
-        as active again.
+        Activates the menu Scene by storing the current active Scene in the
+        previous Scene variable and setting the menu Scene as the active Scene.
         """
         self.__previous_scene = self.__active_scene
         self.__active_scene = self.__menu_scene
 
     def __end_menu(self) -> None:
         """
-        Sets the previous Scene (active Scene when the menu was started)
-        to the active Scene and set the __previous_scene
-        variable to None to indicate, that the menu is closed.
+        Deactivates the menu Scene by restoring the previous Scene as the
+        active Scene and setting the previous Scene variable to None.
         """
         self.__active_scene = self.__previous_scene
         self.__previous_scene = None
 
     def update(self, event: str, mouselocation: tuple[int, int]) -> None:
         """
-        If the new Scene flag is active, the next Scene will be set
-        to the active Scene and then, together with the new Scene flag,
-        be cleared.
-        Checks, if the menu should be started or ended.
+        Updates the active Scene based on the provided event and mouse location.
+        Handles the transition to and from the menu Scene if the menu access
+        event is triggered. Switches to the next Scene if the new Scene flag
+        is set in the active Scene.
+
+        Args:
+            event (str): The event to process.
+            mouselocation (tuple[int, int]): The current mouse location.
         """
         if "//?" in event:
             if not isinstance(self.__active_scene, Start):
@@ -74,10 +84,9 @@ class SceneManager:
     
     def get_rendering_context(self) -> list[Component]:
         """
-        Gets all the components, that should be rendered, 
-        from the active Scene.
+        Retrieves the components to be rendered from the active Scene.
 
         Returns:
-            Components to be rendered to the screen
+            list[Component]: A list of components to be rendered on the screen.
         """
         return self.__active_scene.get_rendering_context()

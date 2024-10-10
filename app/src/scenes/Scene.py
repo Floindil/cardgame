@@ -2,7 +2,6 @@ import pygame
 from typing import Type, Optional
 
 from src.resources.assets.AssetManager import AssetManager
-
 from src.resources.components.ComponentManager import ComponentManager
 from src.resources.components.Textfield import Textfield
 from src.resources.components.Component import Component
@@ -10,9 +9,10 @@ from src.resources.components.Button import Button
 
 class Scene:
     """
-    The Scene class is used as a base for other Scene Objects
-    like menus and game screens.
+    The Scene class serves as a base for other scene objects such as menus and game screens.
+    It manages assets, components, and transitions between scenes.
     """
+
     __assetManager: AssetManager
     __componentManager: ComponentManager
     __next_scene: Optional[Type['Scene']]
@@ -23,8 +23,8 @@ class Scene:
 
     def __init__(self) -> None:
         """
-        Creates a Scene object and initializes the surface,
-        assetManager, componentManager, counter and stop variables.
+        Initializes a Scene object and its core attributes, including asset and component managers,
+        event handling, scene transition, and control variables.
         """
         self.__assetManager = AssetManager()
         self.__componentManager = ComponentManager()
@@ -35,42 +35,76 @@ class Scene:
         self._menuacces = True
 
     def start(self):
-        # In subclasses add code for starting behaviour and Component creation
+        """
+        Placeholder for starting behavior and component creation.
+        Should be overridden in subclasses to define specific start behavior.
+        """
         pass
 
     @property
     def counter(self) -> int:
         """
-        Returns the counter of the Scene object. The counter is increased 
-        by 1 with every tick.
+        Returns the counter of the Scene object, which increments with every tick.
+
+        Returns:
+            int: The current counter value.
         """
         return self.__counter
-    
+
     @property
     def last_event(self) -> str:
+        """
+        Returns the last event that occurred in the Scene.
+
+        Returns:
+            str: The last event.
+        """
         return self.__event
 
     @property
     def stop(self) -> bool:
-        """Indicates, if the Game should be stopped."""
+        """
+        Indicates whether the game should be stopped.
+
+        Returns:
+            bool: True if the game should stop, False otherwise.
+        """
         return self.__stop
-    
+
     @property
-    def next_scene(self):
+    def next_scene(self) -> Optional[Type['Scene']]:
+        """
+        Returns the next scene to transition to.
+
+        Returns:
+            Optional[Type['Scene']]: The next scene or None if no transition is set.
+        """
         return self.__next_scene
-    
+
     @next_scene.setter
-    def next_scene(self, new_scene: Optional[type['Scene']]) -> None:
+    def next_scene(self, new_scene: Optional[Type['Scene']]) -> None:
+        """
+        Sets the next scene to transition to.
+
+        Args:
+            new_scene (Optional[Type['Scene']]): The next scene.
+        """
         self.__next_scene = new_scene
-    
+
     def end(self) -> None:
-        """Sets the stop variable to True to indicate, that the Game should end."""
+        """
+        Sets the stop flag to True to indicate that the game should end.
+        """
         self.__stop = True
 
     def update(self, event: str, mouselocation: tuple[int, int]) -> None:
         """
-        Checks the Component for updates and provides them to the managers.\n
-        Increments the counter of the Scene by 1 to allow timed Scene events.
+        Updates the Scene based on events and mouse location, manages component updates,
+        and handles button actions.
+
+        Args:
+            event (str): The event string.
+            mouselocation (tuple[int, int]): The mouse location as an (x, y) tuple.
         """
         if event:
             self.__event = event
@@ -105,22 +139,43 @@ class Scene:
         """
         self.__assetManager.update_image(image_name, image)
 
-    def get_image_size(self, image_id: str):
+    def get_image_size(self, image_id: str) -> tuple[int, int]:
+        """
+        Gets the size of an image by its ID.
+
+        Args:
+            image_id (str): The ID of the image.
+
+        Returns:
+            tuple[int, int]: The size of the image as (width, height).
+        """
         image = self.__assetManager.get_image(image_id)
         return image.get_size()
 
-    def register_button(self, button: Button):
+    def register_button(self, button: Button) -> None:
+        """
+        Registers a button component and its associated textfield.
+
+        Args:
+            button (Button): The button to register.
+        """
         self.register_component(button)
         self.register_textfield(button.textfield)
 
     def register_textfield(self, textfield: Textfield) -> None:
+        """
+        Registers a textfield component and its associated image.
+
+        Args:
+            textfield (Textfield): The textfield to register.
+        """
         self.register_component(textfield)
         self.register_image(textfield.ID, textfield.image)
 
     def load_asset(self, asset_name: str) -> None:
         """
-        Loads an asset (either an image or sound) using the asset manager.\n
-        Directly registers the asset in the AssetManager.
+        Loads an asset (either an image or sound) using the asset manager
+        and directly registers it in the AssetManager.
 
         Args:
             asset_name (str): The name of the asset to load.
@@ -135,16 +190,9 @@ class Scene:
         else:
             raise TypeError("Asset must be either a .png or .mp3 file!")
 
-    def start(self) -> None:
-        """
-        Defines the behaviour of the Scene when it is started.
-        This method should be overridden by subclasses.
-        """
-        pass
-
     def register_component(self, component: Component) -> None:
         """
-        Adds a Component object to the components list of the Scene.
+        Adds a component object to the component list of the Scene.
 
         Args:
             component (Component): The component to add.
@@ -156,22 +204,22 @@ class Scene:
             self.__componentManager.register(component)
         else:
             raise TypeError("Can only add instances of Component")
-        
+
     def get_component(self, ID: str) -> Component:
         """
-        Uses the ID of a component to return it from the componentManager.
-        
+        Retrieves a component by its ID from the component manager.
+
         Args:
-            ID (str): component ID
-            
+            ID (str): The ID of the component.
+
         Returns:
-            component (Component): the component associated with the ID
+            Component: The component associated with the ID.
         """
         return self.__componentManager.get(ID)
 
     def get_rendering_context(self) -> list[tuple[pygame.Surface, tuple[int, int]]]:
         """
-        Gets the components to render from the componentManager and prepares
+        Retrieves the components to be rendered from the component manager and prepares
         them for rendering based on their render priority.
 
         Returns:
@@ -182,7 +230,6 @@ class Scene:
 
         # Iterate through all the Scene's components that will be rendered
         for information in self.__componentManager.rendering_context:
-
             component_ID = information[0]
             location = information[1]
             priority = information[2]
