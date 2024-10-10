@@ -9,6 +9,8 @@ class Start(Scene):
         super().__init__()
 
         self._menuacces = False
+
+    def start(self):
         
         textfield = Textfield("START MENU", 100, 100, color = "white", fontsize = 40)
         self.register_textfield(textfield)
@@ -24,6 +26,17 @@ class Start(Scene):
             buttonsize[1],
             image_id = "button",
             action = self.start_cardgame
+        )
+        self.register_button(button)
+
+        button = Button(
+            "EXIT",
+            100,
+            400,
+            buttonsize[0],
+            buttonsize[1],
+            image_id = "button",
+            action = self.end
         )
         self.register_button(button)
 

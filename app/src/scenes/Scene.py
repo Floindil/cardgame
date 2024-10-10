@@ -1,8 +1,8 @@
 import pygame
 from typing import Type, Optional
 
-from src.core.Configuration import Configuration as CFG
 from src.resources.assets.AssetManager import AssetManager
+
 from src.resources.components.ComponentManager import ComponentManager
 from src.resources.components.Textfield import Textfield
 from src.resources.components.Component import Component
@@ -33,6 +33,10 @@ class Scene:
         self.__event = ""
         self.__next_scene = None
         self._menuacces = True
+
+    def start(self):
+        # In subclasses add code for starting behaviour and Component creation
+        pass
 
     @property
     def counter(self) -> int:

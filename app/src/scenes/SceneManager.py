@@ -25,6 +25,7 @@ class SceneManager:
         self.__active_scene = Start()
         self.__previous_scene = None
         self.__menu = False
+        self.__active_scene.start()
 
     def __start_menu(self) -> None:
         """
@@ -59,12 +60,14 @@ class SceneManager:
             elif self.__active_scene._menuacces:
                 self.__menu = True
                 self.__start_menu()
+            self.__active_scene.start()
 
         new_scene = self.__active_scene.next_scene
 
         if new_scene:
             self.__active_scene.next_scene = None
             self.__active_scene = new_scene
+            self.__active_scene.start()
 
         self.__active_scene.update(event, mouselocation)
     

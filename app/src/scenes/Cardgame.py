@@ -1,4 +1,5 @@
 from src.resources.components.Zone import Zone
+from src.resources.components.Button import Button
 from src.resources.components.Textfield import Textfield
 from src.scenes.Scene import Scene
 
@@ -6,6 +7,8 @@ class Cardgame(Scene):
 
     def __init__(self) -> None:
         super().__init__()
+
+    def start(self) -> None:
 
         textfield = Textfield("CARDGAME", 100, 100, color = "white", fontsize = 40)
         self.register_textfield(textfield)
