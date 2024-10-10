@@ -13,6 +13,7 @@ class Scene:
     __componentManager: ComponentManager
     __counter: int
     __stop: bool
+    __event: str
 
     def __init__(self) -> None:
         """
@@ -23,6 +24,7 @@ class Scene:
         self.__componentManager = ComponentManager()
         self.__counter = 0
         self.__stop = False
+        self.__event = ""
 
     @property
     def counter(self) -> int:
@@ -31,6 +33,10 @@ class Scene:
         by 1 with every tick.
         """
         return self.__counter
+    
+    @property
+    def last_event(self) -> str:
+        return self.__event
 
     @property
     def stop(self) -> bool:
@@ -41,18 +47,33 @@ class Scene:
         """Sets the stop variable to True to indicate, that the Game should end."""
         self.__stop = True
 
-    def update(self) -> None:
+    def update(self, event: str, mouselocation: tuple[int, int]) -> None:
         """
         Checks the Component for updates and provides them to the managers.\n
         Increments the counter of the Scene by 1 to allow timed Scene events.
         """
+        if event:
+            self.__event = event
+
         self.__counter += 1
+
         for entity in self.__componentManager.components:
             c: Component = self.__componentManager.components.get(entity)
             if c.update:
                 if c.ID in self.__assetManager.images:
                     self.__assetManager.update_image(c.ID, c.image)
                     c.resetUpdate()
+
+        if "//d" in event:
+            for button in self.__componentManager.buttons:
+                if button.collide_point(mouselocation[0], mouselocation[1]):
+                    button.flag = True
+
+        if "//u" in event:
+            for button in self.__componentManager.buttons:
+                if button.collide_point(mouselocation[0], mouselocation[1]) and button.flag:
+                    button.flag = False
+                    button.action()
 
     def register_image(self, image_name: str, image: pygame.Surface) -> None:
         """

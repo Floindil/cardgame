@@ -6,18 +6,12 @@ class Eventhandler:
     """
 
     __pressed_buttons: list
-    __mouse_location: tuple[int, int]
 
     def __init__(self) -> None:
         """
         Initializes the Eventhandler.
         """
         self.__pressed_buttons = []
-        self.__mouse_location = (0,0)
-
-    @property
-    def mouse_location(self) -> tuple[int, int]:
-        return self.__mouse_location
 
     @property
     def pressed_buttons(self) -> list:
@@ -34,9 +28,9 @@ class Eventhandler:
             bool: False if a QUIT event is detected, True otherwise.
         """
         running = True
-        typed_string = ""
+        event_string = ""
 
-        self.__mouse_location = pygame.mouse.get_pos()
+        mouselocation = pygame.mouse.get_pos()
 
         for event in events:
 
@@ -45,20 +39,22 @@ class Eventhandler:
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.__pressed_buttons = pygame.mouse.get_pressed()
+                event_string += "//d"
 
             if event.type == pygame.MOUSEBUTTONUP:
                 self.__pressed_buttons = pygame.mouse.get_pressed()
+                event_string += "//u"
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
-                    typed_string += "//<"
+                    event_string += "//<"
                 elif event.key == pygame.K_DELETE:
-                    typed_string += "//>"
+                    event_string += "//>"
                 elif event.key == pygame.K_RETURN:
-                    typed_string += "//!"
+                    event_string += "//!"
                 elif event.key == pygame.K_ESCAPE:
-                    typed_string += "//?"
+                    event_string += "//?"
                 else:
-                    typed_string += event.unicode
+                    event_string += event.unicode
 
-        return running, typed_string
+        return (running, event_string, mouselocation)

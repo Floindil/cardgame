@@ -84,11 +84,11 @@ class Textfield(Component):
         self.__create_image()
 
     @property
-    def size(self) -> int:
+    def font_size(self) -> int:
         """Returns the letter size associated with the Textfield object."""
         return self.__size
     
-    @size.setter
+    @font_size.setter
     def size(self, size: int) -> None:
         """
         Checks, if the provided size is of type int and sets it to

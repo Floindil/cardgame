@@ -37,7 +37,7 @@ class SceneManager:
         """
         self.__new_scene = scene
 
-    def start__menu(self) -> None:
+    def __start_menu(self) -> None:
         """
         Stores the active Scene in the previous Scene variable
         and sets the menu Scene as the active Scene.
@@ -47,7 +47,7 @@ class SceneManager:
         self.__previous_scene = self.__active_scene
         self.__active_scene = self.__menu_scene
 
-    def end__menu(self) -> None:
+    def __end_menu(self) -> None:
         """
         Sets the previous Scene (active Scene when the menu was started)
         to the active Scene and set the __previous_scene
@@ -56,7 +56,7 @@ class SceneManager:
         self.__active_scene = self.__previous_scene
         self.__previous_scene = None
 
-    def update(self) -> None:
+    def update(self, event: str, mouselocation: tuple[int, int]) -> None:
         """
         If the new Scene flag is active, the next Scene will be set
         to the active Scene and then, together with the new Scene flag,
@@ -68,12 +68,12 @@ class SceneManager:
             self.__new_scene = None
 
         if self.__menu and not self.__previous_scene:
-            self.start__menu()
+            self.__start_menu()
 
         elif not self.__menu and self.__previous_scene:
-            self.end__menu()
+            self.__end_menu()
 
-        self.__active_scene.update()
+        self.__active_scene.update(event, mouselocation)
     
     def get_rendering_context(self) -> list[Component]:
         """

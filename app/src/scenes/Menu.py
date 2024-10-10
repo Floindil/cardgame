@@ -10,17 +10,7 @@ class Menu(Scene):
         self.register_image(textfield.ID, textfield.image)
         self.register_component(textfield)
 
-    def update(self) -> None:
-        super().update()
+    def update(self, event: str, mouselocation: list[int, int]) -> None:
+        super().update(event, mouselocation)
         textfield: Textfield = self.get_component("text1")
-        if self.counter == 60:
-            textfield.text = "Changed Text"
-            textfield.location = (200, 200)
-        if self.counter == 120:
-            textfield.text = "F*** this is Wild!"
-            textfield.location = (300, 300)
-        if self.counter == 180:
-            textfield.text = "TIME TO END THIS!"
-            textfield.location = (400, 400)
-        if self.counter == 240:
-            self.end()
+        textfield.text = self.last_event

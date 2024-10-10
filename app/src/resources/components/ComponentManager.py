@@ -1,4 +1,5 @@
 from src.resources.components.Component import Component
+from src.resources.components.Button import Button
 
 class ComponentManager:
     """
@@ -57,7 +58,7 @@ class ComponentManager:
         return self.__components
     
     @property
-    def buttons(self) -> list[Component]:
+    def buttons(self) -> list[Button]:
         """Returns all registered button components."""
         b = []
         for entity in self.__components:

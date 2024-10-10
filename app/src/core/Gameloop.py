@@ -26,7 +26,10 @@ class Gameloop:
         """
         self.__clock.tick(CFG.FPS)
 
-        running, typed_string = self.__eventhandler.run(pygame.event.get())
+        eventcontext = self.__eventhandler.run(pygame.event.get())
+        running = eventcontext[0]
+        event_string = eventcontext[1]
+        mouselocation = eventcontext[2]
 
         if self.__sceneManager.stop:
             running = False
@@ -34,7 +37,7 @@ class Gameloop:
         if not running:
             self.stop()
 
-        self.__sceneManager.update()
+        self.__sceneManager.update(event_string, mouselocation)
         self.__renderer.run(self.rendering_context)
 
     def stop(self):

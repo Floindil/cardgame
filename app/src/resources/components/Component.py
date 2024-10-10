@@ -83,6 +83,12 @@ class Component:
     @property
     def center(self) -> tuple[int, int]:
         return (self.__rect.centerx, self.__rect.centery)
+    
+    def collide_point(self, x: int, y: int) -> bool:
+        if self.__rect.collidepoint(x, y):
+            return True
+        else:
+            return False
 
     @size.setter
     def size(self, width: int, height: int) -> None:
