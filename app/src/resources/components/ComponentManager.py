@@ -1,38 +1,59 @@
 from src.resources.components.Component import Component
+from src.resources.components.Dragable import Dragable
 from src.resources.components.Button import Button
 
 class ComponentManager:
     """
-    Manages and stores components for the game.
+    Manages and stores various components for the game, including buttons, dragables, and other components.
+    
+    Attributes:
+        __buttons (dict[str, Button]): A dictionary to store Button components with their IDs as keys.
+        __dragables (dict[str, Dragable]): A dictionary to store Dragable components with their IDs as keys.
+        __other (dict[str, Component]): A dictionary to store other types of components with their IDs as keys.
     """
-    __components: dict[str, Component]
+
+    __buttons: dict[str, Button]
+    __dragables: dict[str, Dragable]
+    __other: dict[str, Component]
 
     def __init__(self) -> None:
         """
-        Initializes the ComponentManager with an empty dictionary for components.
+        Initializes the ComponentManager with empty dictionaries for buttons, dragables, and other components.
         """
-        self.__components = {}
+        self.__buttons = {}
+        self.__dragables = {}
+        self.__other = {}
 
     def register(self, component: Component) -> None:
         """
-        Registers a component by adding it to the components dictionary using the component's ID as the key.
-        
+        Registers a component by adding it to the appropriate dictionary based on its type.
+
         Args:
-            component (Component): The component to add to the components dictionary.
+            component (Component): The component to register. It can be of type Button, Dragable, or any other type that inherits from Component.
         """
-        self.__components[component.ID] = component
+        if isinstance(component, Button):
+            self.__buttons[component.ID] = component
+        elif isinstance(component, Dragable):
+            self.__dragables[component.ID] = component
+        else:
+            self.__other[component.ID] = component
 
     def get(self, ID: str) -> Component:
         """
-        Retrieves a component from the components dictionary using its ID.
-        
+        Retrieves a component from the stored dictionaries using its ID.
+
         Args:
             ID (str): The ID of the component to retrieve.
 
         Returns:
-            Component: The component associated with the provided ID.
+            Component: The component associated with the provided ID. Returns None if no component with the given ID is found.
         """
-        return self.__components.get(ID)
+        if ID in self.__buttons:
+            return self.__buttons.get(ID)
+        elif ID in self.__dragables:
+            return self.__dragables.get(ID)
+        else:
+            return self.__other.get(ID)
 
     @property
     def rendering_context(self) -> list[tuple[str, tuple[int, int], int]]:
@@ -40,31 +61,44 @@ class ComponentManager:
         Gathers rendering information from all components that have the RENDER flag set to True.
 
         Returns:
-            list: A list of tuples containing the image_id, location, and render priority of each component to be rendered.
+            list[tuple[str, tuple[int, int], int]]: A list of tuples containing the image_id, location, and render priority of each component to be rendered.
         """
-        context = [
+        return [
             (c.image_id, c.location, c.RENDERPRIORITY)
-            for c in self.__components.values()
+            for c in self.components.values()
             if c.RENDER
         ]
-        return context
 
     @property
     def components(self) -> dict[str, Component]:
         """
-        Returns all registered components as a dictionary.
+        Retrieves all registered components as a dictionary.
 
         Returns:
-            dict: A dictionary of all registered components.
+            dict[str, Component]: A dictionary of all registered components, including buttons, dragables, and others.
         """
-        return self.__components
+        components = {}
+        components.update(self.__buttons)
+        components.update(self.__dragables)
+        components.update(self.__other)
+        return components
     
     @property
     def buttons(self) -> list[Button]:
         """
-        Returns all registered button components.
+        Retrieves all registered Button components.
 
         Returns:
-            list[Button]: A list of all button components.
+            list[Button]: A list of all Button components.
         """
-        return [c for c in self.__components.values() if isinstance(c, Button)]
+        return list(self.__buttons.values())
+    
+    @property
+    def dragables(self) -> list[Dragable]:
+        """
+        Retrieves all registered Dragable components.
+
+        Returns:
+            list[Dragable]: A list of all Dragable components.
+        """
+        return list(self.__dragables.values())
