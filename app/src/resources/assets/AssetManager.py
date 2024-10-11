@@ -1,22 +1,22 @@
 import pygame
-from src.core.Configuration import Paths
+from src.core.Configuration import Paths, Assets
 
 class AssetManager:
     """
     The AssetManager class provides functionalities to load
     and store assets like images and sounds.
 
-    Loaded assets will be stored in a dictionary and can be
-    returned to use them.
+    Loaded assets will be stored in dictionaries and can be
+    returned for use when needed.
     """
     __images: dict
     __sounds: dict
-    __path: str 
+    __path: str
     __mixer: pygame.mixer
 
     def __init__(self) -> None:
         """
-        Creates a AssetManager Object and initializes the
+        Initializes the AssetManager object and initializes the
         images and sounds dictionaries.
         """
         self.__path = Paths.ASSETS
@@ -26,50 +26,91 @@ class AssetManager:
 
     @property
     def images(self) -> dict:
+        """
+        Returns the dictionary of loaded images.
+
+        Returns:
+            dict: A dictionary where keys are image names and values are pygame.Surface objects.
+        """
         return self.__images
 
     def update_image(self, image_name: str, image: pygame.Surface) -> None:
+        """
+        Updates the images dictionary with a new image.
+
+        Args:
+            image_name (str): The name to register the image under.
+            image (pygame.Surface): The image surface to store.
+        """
         if isinstance(image, pygame.Surface):
             self.__images.update({image_name: image})
-
-    def load_image(self, image_name: str) -> None:
-        """
-        Loads a .png file from your images/assets folder.\n
-        registers the image in the images dictionary.
-        """
-        if image_name.endswith(".png"):
-            fileArg = f"{self.__path}images/{image_name}"
-            newImage = pygame.image.load(fileArg)
-            self.__images.update({image_name.replace(".png", ""): newImage})
         else:
-            raise TypeError("must be png file!")
+            raise TypeError("image must be a pygame.Surface object")
 
-    def get_image(self, imageName: str) -> pygame.Surface:
+    def load_image(self, asset: Assets) -> None:
+        """
+        Loads a .png file from the assets/images folder and registers it in the images dictionary.
+
+        Args:
+            image_name (str): The name of the image file to load.
+        
+        Raises:
+            TypeError: If the file is not a .png file.
+        """
+        if asset.NAME.endswith(".png"):
+            file_path = f"{self.__path}images/{asset.NAME}"
+            new_image = pygame.image.load(file_path)
+            self.__images.update({asset.ID: new_image})
+        else:
+            raise TypeError("file must be a .png file")
+
+    def get_image(self, image_name: str) -> pygame.Surface:
         """
         Returns a specific image from the images dictionary.
+
+        Args:
+            image_name (str): The name of the image to retrieve.
+
+        Returns:
+            pygame.Surface: The requested image surface.
         """
-        image = self.__images.get(imageName)
-        return image
+        return self.__images.get(image_name)
 
     @property
     def sounds(self) -> dict:
+        """
+        Returns the dictionary of loaded sounds.
+
+        Returns:
+            dict: A dictionary where keys are sound names and values are pygame.mixer.Sound objects.
+        """
         return self.__sounds
 
-    def load_sound(self, audio_name: str) -> None:
+    def load_sound(self, asset: Assets) -> None:
         """
-        Loads a .mp3 file from your images/sounds folder.\n
-        registers the sound in the sounds dictionary.
+        Loads a .mp3 file from the assets/sounds folder and registers it in the sounds dictionary.
+
+        Args:
+            audio_name (str): The name of the audio file to load.
+        
+        Raises:
+            TypeError: If the file is not a .mp3 file.
         """
-        if audio_name.endswith(".mp3"):
-            fileArg = f"{self.__path}sounds/{audio_name}"
-            newAudio = self.__mixer.Sound(fileArg)
-            self.__sounds.update({audio_name.replace(".mp3", ""): newAudio})
+        if asset.NAME.endswith(".mp3"):
+            file_path = f"{self.__path}sounds/{asset.NAME}"
+            new_audio = self.__mixer.Sound(file_path)
+            self.__sounds.update({asset.ID: new_audio})
         else:
-            raise TypeError("must be mp3 file!")
-    
-    def get_sound(self, soundName: str) -> pygame.mixer.Sound:
+            raise TypeError("file must be a .mp3 file")
+
+    def get_sound(self, sound_name: str) -> pygame.mixer.Sound:
         """
         Returns a specific sound from the sounds dictionary.
+
+        Args:
+            sound_name (str): The name of the sound to retrieve.
+
+        Returns:
+            pygame.mixer.Sound: The requested sound.
         """
-        sound = self.__sounds.get(soundName)
-        return sound
+        return self.__sounds.get(sound_name)

@@ -23,12 +23,16 @@ class Start(Scene):
         and two buttons: one to start the card game and one to exit the game.
         """
         # Create and register a title textfield
-        textfield = Textfield("START MENU", 100, 100, color="white", fontsize=40)
+        textfield = Textfield("START MENU", 100, 100, fontsize=40)
+        self.register_textfield(textfield)
+
+        # Create and register an input control text field
+        textfield = Textfield("inputcontrol", 100, 150)
         self.register_textfield(textfield)
         
         # Load the button asset and get its size
-        self.load_asset("button.png")
-        buttonsize = self.get_image_size("button")
+        self.load_asset(self.assets.BUTTON)
+        buttonsize = self.get_image_size(self.assets.BUTTON.ID)
 
         # Create and register the start button
         start_button = Button(
@@ -60,3 +64,17 @@ class Start(Scene):
         from the Start menu to the card game.
         """
         self.next_scene = Cardgame()
+
+    def update(self, event: str, mouselocation: list[int, int]) -> None:
+        """
+        Updates the game state based on events and mouse location.
+        
+        Args:
+            event (str): The latest event to process.
+            mouselocation (list[int, int]): The current mouse location.
+        """
+        super().update(event, mouselocation)
+
+        # Update the text of the input control text field with the last event
+        textfield: Textfield = self.get_component("inputcontrol")
+        textfield.text = self.last_event

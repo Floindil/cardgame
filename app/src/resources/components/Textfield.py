@@ -20,7 +20,7 @@ class Textfield(Component):
             text: str = None,
             font: str = Fonts.STANDARDFONT,
             fontsize: int = Fonts.STANDARDSIZE,
-            color: str = 'black'
+            color: str = Fonts.STANDARDCOLOR
         ) -> None:
         """
         Creates a Textfield object. This object can display any text.

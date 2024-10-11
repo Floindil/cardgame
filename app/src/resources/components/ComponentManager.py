@@ -3,66 +3,68 @@ from src.resources.components.Button import Button
 
 class ComponentManager:
     """
-    Provides functionalities to store and manage Components.
+    Manages and stores components for the game.
     """
-
-    __components: dict
+    __components: dict[str, Component]
 
     def __init__(self) -> None:
         """
-        Initializes the components dictionary.
+        Initializes the ComponentManager with an empty dictionary for components.
         """
         self.__components = {}
 
     def register(self, component: Component) -> None:
         """
-        Adds a component to the components dict and uses the ID of the 
-        component as key.
+        Registers a component by adding it to the components dictionary using the component's ID as the key.
         
         Args:
-            component (Component): component to add to the components dict
+            component (Component): The component to add to the components dictionary.
         """
-        self.__components.update({component.ID: component})
+        self.__components[component.ID] = component
 
     def get(self, ID: str) -> Component:
         """
-        Returns a component associated with the provided ID from the components dict.
+        Retrieves a component from the components dictionary using its ID.
         
         Args:
-            ID (str): ID of the component, that should be returned
+            ID (str): The ID of the component to retrieve.
 
         Returns:
-            component (Component): component associated with the provided ID
+            Component: The component associated with the provided ID.
         """
         return self.__components.get(ID)
 
     @property
-    def rendering_context(self) -> list:
+    def rendering_context(self) -> list[tuple[str, tuple[int, int], int]]:
         """
-        Iterates through the components dict and gathers all the information needed
-        for rendering from all components, where the RENDER flag is set to true.
+        Gathers rendering information from all components that have the RENDER flag set to True.
 
         Returns:
-            context (list): list of information needed to render the component
+            list: A list of tuples containing the image_id, location, and render priority of each component to be rendered.
         """
-        context = []
-        for entity in self.__components:
-            c: Component = self.__components.get(entity)
-            if c.RENDER:
-                context.append((c.image_id, c.location, c.RENDERPRIORITY))
+        context = [
+            (c.image_id, c.location, c.RENDERPRIORITY)
+            for c in self.__components.values()
+            if c.RENDER
+        ]
         return context
 
     @property
-    def components(self) -> dict:
-        """Returns all registered components as dict."""
+    def components(self) -> dict[str, Component]:
+        """
+        Returns all registered components as a dictionary.
+
+        Returns:
+            dict: A dictionary of all registered components.
+        """
         return self.__components
     
     @property
     def buttons(self) -> list[Button]:
-        """Returns all registered button components."""
-        b = []
-        for entity in self.__components:
-            c = self.__components.get(entity)
-            if isinstance(c, Component) and c.TAG == "button":
-                b.append(c)
-        return b
+        """
+        Returns all registered button components.
+
+        Returns:
+            list[Button]: A list of all button components.
+        """
+        return [c for c in self.__components.values() if isinstance(c, Button)]

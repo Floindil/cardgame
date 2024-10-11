@@ -1,5 +1,6 @@
 from src.resources.components.Component import Component
 from src.resources.components.Textfield import Textfield
+from src.core.Configuration import Fonts
 
 class Button(Component):
     """
@@ -21,7 +22,7 @@ class Button(Component):
             width: int,
             height: int,
             action: callable = None,
-            text_color: str = "black",
+            text_color: str = Fonts.BUTTONCOLOR,
             text: str = None,
             image_id: str = None
         ) -> None:

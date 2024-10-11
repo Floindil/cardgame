@@ -1,6 +1,7 @@
 import pygame
 from typing import Type, Optional
 
+from src.core.Configuration import Assets
 from src.resources.assets.AssetManager import AssetManager
 from src.resources.components.ComponentManager import ComponentManager
 from src.resources.components.Textfield import Textfield
@@ -40,6 +41,16 @@ class Scene:
         Should be overridden in subclasses to define specific start behavior.
         """
         pass
+
+    @property
+    def assets(self) -> Assets:
+        """
+        Returns the Assets class which holds asset names and IDs.
+
+        Returns:
+            Assets: The class containing asset constants.
+        """
+        return Assets
 
     @property
     def counter(self) -> int:
@@ -116,7 +127,7 @@ class Scene:
             if c.update:
                 if c.ID in self.__assetManager.images:
                     self.__assetManager.update_image(c.ID, c.image)
-                    c.resetUpdate()
+                    c.reset_update()
 
         if "//d" in event:
             for button in self.__componentManager.buttons:
@@ -172,7 +183,7 @@ class Scene:
         self.register_component(textfield)
         self.register_image(textfield.ID, textfield.image)
 
-    def load_asset(self, asset_name: str) -> None:
+    def load_asset(self, asset: Assets) -> None:
         """
         Loads an asset (either an image or sound) using the asset manager
         and directly registers it in the AssetManager.
@@ -183,10 +194,10 @@ class Scene:
         Raises:
             TypeError: If the asset is not a .png or .mp3 file.
         """
-        if asset_name.endswith(".png"):
-            self.__assetManager.load_image(asset_name)
-        elif asset_name.endswith(".mp3"):
-            self.__assetManager.load_sound(asset_name)
+        if asset.NAME.endswith(".png"):
+            self.__assetManager.load_image(asset)
+        elif asset.NAME.endswith(".mp3"):
+            self.__assetManager.load_sound(asset)
         else:
             raise TypeError("Asset must be either a .png or .mp3 file!")
 

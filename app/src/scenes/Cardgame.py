@@ -4,29 +4,55 @@ from src.resources.components.Textfield import Textfield
 from src.scenes.Scene import Scene
 
 class Cardgame(Scene):
+    """
+    Cardgame class extends the Scene class and represents the main 
+    logic for the card game. It handles the initialization and 
+    updating of various components like text fields and zones.
+    """
 
     def __init__(self) -> None:
+        """
+        Initializes the Cardgame class. Calls the initializer of the 
+        parent Scene class.
+        """
         super().__init__()
 
     def start(self) -> None:
-
-        textfield = Textfield("CARDGAME", 100, 100, color = "white", fontsize = 40)
+        """
+        Starts the card game by setting up initial components such as
+        text fields and zones. Loads assets and registers components 
+        for the game.
+        """
+        # Create and register a title text field
+        textfield = Textfield("CARDGAME", 100, 100, fontsize=40)
         self.register_textfield(textfield)
 
-        self.load_asset("fieldzone.png")
-        fieldzone_size = self.get_image_size("fieldzone")
-        fieldzone = Zone("fieldzone", 200, 200, fieldzone_size[0], fieldzone_size[1])
+        # Create and register an input control text field
+        textfield = Textfield("inputcontrol", 100, 150)
+        self.register_textfield(textfield)
+
+        # Load and register the field zone component
+        self.load_asset(self.assets.FIELDZONE)
+        fieldzone_size = self.get_image_size(self.assets.FIELDZONE.ID)
+        fieldzone = Zone(self.assets.FIELDZONE.ID, 200, 200, fieldzone_size[0], fieldzone_size[1])
         self.register_component(fieldzone)
 
-        self.load_asset("gravezone.png")
-        gravezone_size = self.get_image_size("gravezone")
-        gravezone = Zone("gravezone", 400, 200, gravezone_size[0], gravezone_size[1])
+        # Load and register the grave zone component
+        self.load_asset(self.assets.GRAVEZONE)
+        gravezone_size = self.get_image_size(self.assets.GRAVEZONE.ID)
+        gravezone = Zone(self.assets.GRAVEZONE.ID, 400, 200, gravezone_size[0], gravezone_size[1])
         self.register_component(gravezone)
 
-        textfield = Textfield("inputcontrol", 100, 300, color = "white")
-        self.register_textfield(textfield)
-
     def update(self, event: str, mouselocation: list[int, int]) -> None:
+        """
+        Updates the game state based on events and mouse location.
+        
+        Args:
+            event (str): The latest event to process.
+            mouselocation (list[int, int]): The current mouse location.
+        """
         super().update(event, mouselocation)
+
+        # Update the text of the input control text field with the last event
         textfield: Textfield = self.get_component("inputcontrol")
         textfield.text = self.last_event
