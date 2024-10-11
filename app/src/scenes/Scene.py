@@ -129,12 +129,12 @@ class Scene:
                     self.__assetManager.update_image(c.ID, c.image)
                     c.reset_update()
 
-        if "//d" in event:
+        if "//m1d" in event:
             for button in self.__componentManager.buttons:
                 if button.collide_point(mouselocation[0], mouselocation[1]):
                     button.flag = True
 
-        if "//u" in event:
+        if "//m1u" in event:
             for button in self.__componentManager.buttons:
                 if button.collide_point(mouselocation[0], mouselocation[1]) and button.flag:
                     button.action()

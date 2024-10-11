@@ -47,12 +47,26 @@ class Eventhandler:
                 event_string += "//q"
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                self.__pressed_buttons = pygame.mouse.get_pressed()
-                event_string += "//d"
+                if event.button == 1:
+                    event_string += "//m1d" # Left mouse button
+                elif event.button == 2:
+                    event_string += "//m2d" # Middle mouse button
+                elif event.button == 3:
+                    event_string += "//m3d" # Right mouse button
+                elif event.button == 4:
+                    event_string += "//m4d" # Wheel up
+                elif event.button == 5:
+                    event_string += "//m5d" # Wheel down
 
             elif event.type == pygame.MOUSEBUTTONUP:
-                self.__pressed_buttons = pygame.mouse.get_pressed()
-                event_string += "//u"
+                if event.button == 1:
+                    event_string += "//m1u" # Left mouse button
+                elif event.button == 2:
+                    event_string += "//m2u" # Middle mouse button
+                elif event.button == 3:
+                    event_string += "//m3u" # Right mouse button
+                # The wheel up events trigger simultaniously with the wheel 
+                # down events and therefore don't need extra tracking.
 
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
