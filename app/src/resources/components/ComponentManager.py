@@ -10,11 +10,13 @@ class ComponentManager:
         __buttons (dict[str, Button]): A dictionary to store Button components with their IDs as keys.
         __dragables (dict[str, Dragable]): A dictionary to store Dragable components with their IDs as keys.
         __other (dict[str, Component]): A dictionary to store other types of components with their IDs as keys.
+        __dragable_priority (int): The priority value used to manage render priorities of dragable components.
     """
 
     __buttons: dict[str, Button]
     __dragables: dict[str, Dragable]
     __other: dict[str, Component]
+    __dragable_priority: int
 
     def __init__(self) -> None:
         """
@@ -23,6 +25,7 @@ class ComponentManager:
         self.__buttons = {}
         self.__dragables = {}
         self.__other = {}
+        self.__dragable_priority = 0
 
     def register(self, component: Component) -> None:
         """
@@ -33,10 +36,28 @@ class ComponentManager:
         """
         if isinstance(component, Button):
             self.__buttons[component.ID] = component
+            self.update_dragable_priority(component.RENDERPRIORITY)
+
         elif isinstance(component, Dragable):
+            component.RENDERPRIORITY = self.__dragable_priority
             self.__dragables[component.ID] = component
+
         else:
             self.__other[component.ID] = component
+            self.update_dragable_priority(component.RENDERPRIORITY)
+
+    def update_dragable_priority(self, priority: int) -> None:
+        """
+        Updates the dragable priority if the given priority matches the current dragable priority.
+
+        Args:
+            priority (int): The priority value to be checked and potentially updated.
+        """
+        if priority == self.__dragable_priority:
+            self.__dragable_priority = priority + 1
+
+            for dragable in self.dragables:
+                dragable.RENDERPRIORITY = self.__dragable_priority
 
     def get(self, ID: str) -> Component:
         """
@@ -50,8 +71,10 @@ class ComponentManager:
         """
         if ID in self.__buttons:
             return self.__buttons.get(ID)
+
         elif ID in self.__dragables:
             return self.__dragables.get(ID)
+
         else:
             return self.__other.get(ID)
 

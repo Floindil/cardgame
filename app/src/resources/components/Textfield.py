@@ -1,5 +1,4 @@
 import pygame
-from typing import Optional, Type
 
 from src.resources.components.Component import Component
 from src.core.Configuration import Fonts

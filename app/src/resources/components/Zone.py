@@ -1,5 +1,3 @@
-from src.core.Configuration import Card as CS
-from src.resources.components.Dragable import Dragable
 from src.resources.components.Component import Component
 
 class Zone(Component):
@@ -7,7 +5,7 @@ class Zone(Component):
     The Zone class represents a specific area in the game and inherits from Component.
     It can hold a card and has a tag identifying it as a zone.
     """
-    __occupant: Dragable
+    __occupant: Component
 
     def __init__(self, id: str, x: int, y: int, width: int, height: int) -> None:
         """
@@ -24,7 +22,7 @@ class Zone(Component):
         self.__occupant = None
         self._tag = "zone"
 
-    def add__occupant(self, object: Dragable) -> None:
+    def add__occupant(self, object: Component) -> None:
         """
         Adds a card to the zone.
         
@@ -40,7 +38,7 @@ class Zone(Component):
         self.__occupant = None
 
     @property
-    def card(self) -> Dragable:
+    def card(self) -> Component:
         """
         Gets the card currently in the zone.
         

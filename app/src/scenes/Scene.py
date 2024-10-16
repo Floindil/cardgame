@@ -6,6 +6,7 @@ from src.resources.assets.AssetManager import AssetManager
 from src.resources.components.ComponentManager import ComponentManager
 from src.resources.components.Textfield import Textfield
 from src.resources.components.Component import Component
+from src.resources.components.Dragable import Dragable
 from src.resources.components.Button import Button
 
 class Scene:
@@ -122,23 +123,48 @@ class Scene:
 
         self.__counter += 1
 
+        # Update all components
         for entity in self.__componentManager.components:
             c: Component = self.__componentManager.components.get(entity)
+            
+            # Update component image if it has been changed
             if c.update:
                 if c.ID in self.__assetManager.images:
                     self.__assetManager.update_image(c.ID, c.image)
                     c.reset_update()
+            
+            # Update location of draggable components
+            if isinstance(c, Dragable) and c.drag:
+                c.location = (mouselocation[0], mouselocation[1])
 
+        # Handle mouse button down event
         if "//m1d" in event:
+            # Check for button interactions
             for button in self.__componentManager.buttons:
                 if button.collide_point(mouselocation[0], mouselocation[1]):
                     button.flag = True
+                    break
 
+            # Check for draggable interactions
+            for dragable in self.__componentManager.dragables:
+                if not dragable.static and dragable.collide_point(mouselocation[0], mouselocation[1]):
+                    dragable.pick_up()
+                    break
+
+        # Handle mouse button up event
         if "//m1u" in event:
+            # Trigger button actions
             for button in self.__componentManager.buttons:
                 if button.collide_point(mouselocation[0], mouselocation[1]) and button.flag:
                     button.action()
                 button.flag = False
+
+            # Drop draggable components
+            for dragable in self.__componentManager.dragables:
+                if not dragable.static and dragable.collide_point(mouselocation[0], mouselocation[1]):
+                    dragable.drop(mouselocation[0], mouselocation[1])
+
+
 
     def register_image(self, image_name: str, image: pygame.Surface) -> None:
         """
@@ -182,24 +208,6 @@ class Scene:
         """
         self.register_component(textfield)
         self.register_image(textfield.ID, textfield.image)
-
-    def load_asset(self, asset: Assets) -> None:
-        """
-        Loads an asset (either an image or sound) using the asset manager
-        and directly registers it in the AssetManager.
-
-        Args:
-            asset_name (str): The name of the asset to load.
-
-        Raises:
-            TypeError: If the asset is not a .png or .mp3 file.
-        """
-        if asset.NAME.endswith(".png"):
-            self.__assetManager.load_image(asset)
-        elif asset.NAME.endswith(".mp3"):
-            self.__assetManager.load_sound(asset)
-        else:
-            raise TypeError("Asset must be either a .png or .mp3 file!")
 
     def register_component(self, component: Component) -> None:
         """
@@ -252,6 +260,11 @@ class Scene:
             inserted = False
             for i, context in enumerate(render_context):
                 c_priority = context[2]
+
+                if priority == 0:
+                    render_context.insert(0, render_information)
+                    inserted = True
+
                 if priority <= c_priority:
                     render_context.insert(i + 1, render_information)
                     inserted = True
@@ -261,3 +274,21 @@ class Scene:
                 render_context.append(render_information)
 
         return render_context
+
+    def load_asset(self, asset: Assets) -> None:
+        """
+        Loads an asset (either an image or sound) using the asset manager
+        and directly registers it in the AssetManager.
+
+        Args:
+            asset_name (str): The name of the asset to load.
+
+        Raises:
+            TypeError: If the asset is not a .png or .mp3 file.
+        """
+        if asset.NAME.endswith(".png"):
+            self.__assetManager.load_image(asset)
+        elif asset.NAME.endswith(".mp3"):
+            self.__assetManager.load_sound(asset)
+        else:
+            raise TypeError("Asset must be either a .png or .mp3 file!")

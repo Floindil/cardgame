@@ -1,5 +1,7 @@
+import pygame
+
 from src.resources.components.Zone import Zone
-from src.resources.components.Button import Button
+from src.resources.components.Dragable import Dragable
 from src.resources.components.Textfield import Textfield
 from src.scenes.Scene import Scene
 
@@ -42,6 +44,17 @@ class Cardgame(Scene):
         gravezone_size = self.get_image_size(self.assets.GRAVEZONE.ID)
         gravezone = Zone(self.assets.GRAVEZONE.ID, 400, 200, gravezone_size[0], gravezone_size[1])
         self.register_component(gravezone)
+
+        # Create and register a blank card image for testing
+        card_image = pygame.Surface((50, 75))
+        card_image.fill(pygame.Color('white'))
+        self.register_image("card", card_image)
+
+        # Create and register a draggable object and register zones, where it can be dropped
+        card = Dragable("card", 200, 400, card_image.get_width(), card_image.get_height())
+        card.register_zone(fieldzone)
+        card.register_zone(gravezone)
+        self.register_component(card)
 
     def update(self, event: str, mouselocation: list[int, int]) -> None:
         """
