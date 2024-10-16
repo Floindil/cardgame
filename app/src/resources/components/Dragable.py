@@ -8,10 +8,11 @@ class Dragable(Component):
     into specified zones.
     """
 
-    __drag: bool                # indicates, if the object is currently beeing dragged
-    __static: bool              # indicates, if the object can be dragged
-    __ancor: tuple[int, int]    # location to which the object returnes, when dropped
-    __zones: list[Zone]         # zones, where the object can be dropped
+    __drag: bool                # Indicates if the object is currently being dragged
+    __static: bool              # Indicates if the object can be dragged
+    __ancor: tuple[int, int]    # Location to which the object returns when dropped
+    __static_zone: list[bool]   # Indicates if the object can be moved from the corresponding zone
+    __zones: list[Zone]         # Zones where the object can be dropped (same indexes as __static_zone)
 
     def __init__(self, id: str, x: int, y: int, width: int = 1, height: int = 1) -> None:
         """
@@ -29,27 +30,40 @@ class Dragable(Component):
         self.__drag = False
         self.__static = False
         self.__ancor = self.location
+        self.__static_zone = []
         self.__zones = []
 
     @property
     def static(self) -> bool:
-        """Indicates whether the dragable component is static and cannot be moved."""
+        """
+        Indicates whether the dragable component is static and cannot be moved.
+
+        Returns:
+            bool: True if the component is static, False otherwise.
+        """
         return self.__static
 
     @property
     def drag(self) -> bool:
-        """Indicates whether the dragable component is currently being dragged."""
+        """
+        Indicates whether the dragable component is currently being dragged.
+
+        Returns:
+            bool: True if the component is being dragged, False otherwise.
+        """
         return self.__drag
 
-    def register_zone(self, zone: Zone) -> None:
+    def register_zone(self, zone: Zone, static: bool = False) -> None:
         """
         Registers a zone that the dragable component can be dropped into.
 
         Args:
             zone (Zone): The zone to be registered.
+            static (bool, optional): Indicates if the component should become static when dropped in this zone. Defaults to False.
         """
         if zone not in self.__zones:
             self.__zones.append(zone)
+            self.__static_zone.append(static)
 
     def unregister_zone(self, zone: Zone) -> None:
         """
@@ -59,7 +73,9 @@ class Dragable(Component):
             zone (Zone): The zone to be unregistered.
         """
         if zone in self.__zones:
-            self.__zones.remove(zone)
+            index = self.__zones.index(zone)
+            self.__zones.pop(index)
+            self.__static_zone.pop(index)
 
     def pick_up(self) -> None:
         """
@@ -72,18 +88,21 @@ class Dragable(Component):
     def drop(self, x: int, y: int) -> None:
         """
         Drops the dragable component at the specified coordinates. If it collides with a registered zone,
-        the component is centered within that zone. Resets the render priority.
+        the component is centered within that zone. Sets the object to static, if the collided zone is 
+        marked as static. Resets the render priority.
 
         Args:
             x (int): The x-coordinate of the drop location.
             y (int): The y-coordinate of the drop location.
         """
-        for zone in self.__zones:
+        for i, zone in enumerate(self.__zones):
             if zone.collide_point(x, y):
                 location = (
                     zone.location.x + (zone.size[0] - self.size[0]) / 2,
                     zone.location.y + (zone.size[1] - self.size[1]) / 2
                 )
+                if self.__static_zone[i]:
+                    self.__static = True
                 self.__ancor = location
                 zone.add__occupant(self)
                 break

@@ -53,7 +53,7 @@ class Cardgame(Scene):
         # Create and register a draggable object and register zones, where it can be dropped
         card = Dragable("card", 200, 400, card_image.get_width(), card_image.get_height())
         card.register_zone(fieldzone)
-        card.register_zone(gravezone)
+        card.register_zone(gravezone, True)
         self.register_component(card)
 
     def update(self, event: str, mouselocation: list[int, int]) -> None:
