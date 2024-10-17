@@ -47,7 +47,7 @@ class Button(Component):
         if not text:
             text = self.ID
         self.__textfield = Textfield(f"{id}_tf", 0, 0, text = text, color = text_color)
-        self.__textfield.RENDERPRIORITY = self.RENDERPRIORITY + 1
+        self.__textfield.render_priority = self.render_priority + 1
         self.__textfield.location = self.__location_tf
 
         if image_id:

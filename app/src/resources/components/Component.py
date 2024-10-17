@@ -5,6 +5,16 @@ class Component:
     The Component class serves as a base for any object that can be displayed on the screen.
     It includes properties and methods for managing the object's position, size, and rendering attributes.
     """
+    __rect: pygame.Rect
+    __id: str
+    __image_id: str
+    __update: bool
+    __active: bool
+    __render: bool
+    __render_priority: int
+    _image: pygame.Surface
+    _tag: str
+    _remove: bool
 
     def __init__(self, id: str, x: int, y: int, width: int = 1, height: int = 1) -> None:
         """
@@ -17,14 +27,16 @@ class Component:
             width (int, optional): The width of the component. Defaults to 1.
             height (int, optional): The height of the component. Defaults to 1.
         """
-        self.RENDER = True
-        self.RENDERPRIORITY = 0
+        self.__render = True
+        self.__render_priority = 0
         self.__rect = pygame.Rect(x, y, width, height)
         self.__id = id
         self.__image_id = id
         self.__update = False
+        self.__active = True
         self._image = pygame.Surface((1, 1))
         self._tag = ""
+        self._remove = False
 
     @property
     def image_id(self) -> str:
@@ -40,6 +52,47 @@ class Component:
     def update(self) -> bool:
         """Indicates whether the component has been changed."""
         return self.__update
+
+    @property
+    def render(self) -> bool:
+        """Indicates wheter the component should be rendered or not."""
+        return self.__render
+    
+    @render.setter
+    def render(self, render: bool) -> None:
+        """Defines wheter the component should be rendered or not."""
+        self.__render = render
+        
+    @property
+    def render_priority(self) -> bool:
+        """
+        Indicates with which priority the component should be rendered.\n
+        Components with priority 0 will be rendered first (bottom layer).
+        """
+        return self.__render_priority
+    
+    @render_priority.setter
+    def render_priority(self, priority: int) -> None:
+        """
+        Sets the priority with which the component should be rendered.\n
+        Components with priority 0 will be rendered first (bottom layer).
+        """
+        self.__render_priority = priority
+    
+    @property
+    def active(self) -> bool:
+        """Indicates wether the component is active or not."""
+        return self.__active
+    
+    @active.setter
+    def active(self, active: bool) -> None:
+        """sets the component to active or inactive"""
+        self.__active = active
+
+    @property
+    def remove(self) -> bool:
+        """Indicates wether the component should be removed from the programm or not"""
+        return self._remove
 
     @property
     def TAG(self) -> str:

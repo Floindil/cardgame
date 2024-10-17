@@ -33,17 +33,23 @@ class Cardgame(Scene):
         textfield = Textfield("inputcontrol", 100, 150)
         self.register_textfield(textfield)
 
-        # Load and register the field zone component
-        self.load_asset(self.assets.FIELDZONE)
-        fieldzone_size = self.get_image_size(self.assets.FIELDZONE.ID)
-        fieldzone = Zone(self.assets.FIELDZONE.ID, 200, 200, fieldzone_size[0], fieldzone_size[1])
-        self.register_component(fieldzone)
+        testzone_size = (100, 150)
 
-        # Load and register the grave zone component
-        self.load_asset(self.assets.GRAVEZONE)
-        gravezone_size = self.get_image_size(self.assets.GRAVEZONE.ID)
-        gravezone = Zone(self.assets.GRAVEZONE.ID, 400, 200, gravezone_size[0], gravezone_size[1])
-        self.register_component(gravezone)
+        # create and register the test zone 1 image
+        testzone1_image = pygame.Surface(testzone_size)
+        testzone1_image.fill(pygame.Color('blue'))
+        self.register_image("testzone1", testzone1_image)
+
+        testzone1 = Zone("testzone1", 200, 200, testzone_size[0], testzone_size[1])
+        self.register_component(testzone1)
+
+        # create and register the test zone 1 image
+        testzone2_image = pygame.Surface(testzone_size)
+        testzone2_image.fill(pygame.Color('green'))
+        self.register_image("testzone2", testzone2_image)
+
+        testzone2 = Zone("testzone2", 500, 200, testzone_size[0], testzone_size[1])
+        self.register_component(testzone2)
 
         # Create and register a blank card image for testing
         card_image = pygame.Surface((50, 75))
@@ -52,8 +58,8 @@ class Cardgame(Scene):
 
         # Create and register a draggable object and register zones, where it can be dropped
         card = Dragable("card", 200, 400, card_image.get_width(), card_image.get_height())
-        card.register_zone(fieldzone)
-        card.register_zone(gravezone, True)
+        card.register_zone(testzone1)
+        card.register_zone(testzone2, True)
         self.register_component(card)
 
     def update(self, event: str, mouselocation: list[int, int]) -> None:

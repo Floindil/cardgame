@@ -83,7 +83,7 @@ class Dragable(Component):
         """
         if not self.__static:
             self.__drag = True
-            self.RENDERPRIORITY += 1
+            self.render_priority += 1
 
     def drop(self, x: int, y: int) -> None:
         """
@@ -108,4 +108,4 @@ class Dragable(Component):
                 break
         self.location = self.__ancor
         self.__drag = False
-        self.RENDERPRIORITY -= 1
+        self.render_priority -= 1

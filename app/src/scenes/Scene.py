@@ -19,8 +19,9 @@ class Scene:
     __componentManager: ComponentManager
     __next_scene: Optional[Type['Scene']]
     __counter: int
-    __stop: bool
     __event: str
+    __stop: bool
+    __interaction: bool
     _menuacces: bool
 
     def __init__(self) -> None:
@@ -34,6 +35,7 @@ class Scene:
         self.__stop = False
         self.__event = ""
         self.__next_scene = None
+        self.__interaction = True
         self._menuacces = True
 
     def start(self):
@@ -42,6 +44,26 @@ class Scene:
         Should be overridden in subclasses to define specific start behavior.
         """
         pass
+
+    @property
+    def interaction(self) -> bool:
+        """
+        Indicates whether the Scene Object can be interacted with or not.
+
+        Returns:
+            bool: True if interaction is allowed, False otherwise.
+        """
+        return self.__interaction
+    
+    @interaction.setter
+    def interaction(self, state: bool):
+        """
+        Sets the next interaction to True or False.
+
+        Args:
+            state (bool): True if interaction should be allowed allowed, False otherwise.
+        """
+        self.__interaction = state
 
     @property
     def assets(self) -> Assets:
@@ -123,47 +145,12 @@ class Scene:
 
         self.__counter += 1
 
-        # Update all components
-        for entity in self.__componentManager.components:
-            c: Component = self.__componentManager.components.get(entity)
-            
-            # Update component image if it has been changed
-            if c.update:
-                if c.ID in self.__assetManager.images:
-                    self.__assetManager.update_image(c.ID, c.image)
-                    c.reset_update()
-            
-            # Update location of draggable components
-            if isinstance(c, Dragable) and c.drag:
-                c.location = (mouselocation[0], mouselocation[1])
+        # Update all components and get the resulting asset updates
+        asset_updates = self.__componentManager.update(self.interaction, event, mouselocation)
 
-        # Handle mouse button down event
-        if "//m1d" in event:
-            # Check for button interactions
-            for button in self.__componentManager.buttons:
-                if button.collide_point(mouselocation[0], mouselocation[1]):
-                    button.flag = True
-                    break
-
-            # Check for draggable interactions
-            for dragable in self.__componentManager.dragables:
-                if not dragable.static and dragable.collide_point(mouselocation[0], mouselocation[1]):
-                    dragable.pick_up()
-                    break
-
-        # Handle mouse button up event
-        if "//m1u" in event:
-            # Trigger button actions
-            for button in self.__componentManager.buttons:
-                if button.collide_point(mouselocation[0], mouselocation[1]) and button.flag:
-                    button.action()
-                button.flag = False
-
-            # Drop draggable components
-            for dragable in self.__componentManager.dragables:
-                if not dragable.static and dragable.collide_point(mouselocation[0], mouselocation[1]):
-                    dragable.drop(mouselocation[0], mouselocation[1])
-
+        if asset_updates:
+            for update in asset_updates:
+                self.__assetManager.update_image(update[0], update[1])
 
 
     def register_image(self, image_name: str, image: pygame.Surface) -> None:
