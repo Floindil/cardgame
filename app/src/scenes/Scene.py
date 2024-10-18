@@ -1,7 +1,7 @@
 import pygame
 from typing import Type, Optional
 
-from src.core.Configuration import Assets
+from src.core.Configuration import Assets, Configuration as C
 from src.resources.assets.AssetManager import AssetManager
 from src.resources.components.ComponentManager import ComponentManager
 from src.resources.components.Textfield import Textfield
@@ -279,3 +279,38 @@ class Scene:
             self.__assetManager.load_sound(asset)
         else:
             raise TypeError("Asset must be either a .png or .mp3 file!")
+
+    def create_component_highlight(
+        self,
+        component: Component,
+        color: str = C.HIGHLIGHT_COLOR,
+        border_width: int = C.HIGHLIGHT_BORDER_WIDTH
+    ) -> None:
+        """
+        Adds a highlight to the specified component.
+
+        Args:
+            component (Component): The component to which the highlight will be added.
+            color (str): The color of the highlight border. Defaults to highlight color from configuration.
+            border_width (int): The width of the highlight border. Defaults to highlight border width from configuration.
+        """
+        # Create the highlight image for the component
+        image = component.create_highlight_image(color, border_width)
+        
+        # Register the highlight component within the system
+        self.register_component(component.highlight)
+        
+        # Register the highlight image with the corresponding highlight ID
+        self.register_image(component.highlight_id, image)
+    
+    def add_component_highlight(self, component: Component, asset: Assets) -> None:
+
+        self.load_asset(asset)
+        image = self.__assetManager.get_image(asset.ID)
+        delta_x = (component.size[0] - image.get_width()) / 2
+        delta_y = (component.size[1] - image.get_height()) / 2
+
+        location = (component.location.x + delta_x, component.location.y + delta_y)
+        
+        component.create_highlight(asset.ID, location, image.get_size())
+        self.register_component(component.highlight)

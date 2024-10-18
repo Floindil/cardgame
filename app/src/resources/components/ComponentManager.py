@@ -165,11 +165,11 @@ class ComponentManager:
         Returns:
             list[tuple[str, tuple[int, int], int]]: A list of tuples containing the image_id, location, and render priority of each component to be rendered.
         """
-        return [
-            (c.image_id, c.location, c.render_priority)
-            for c in self.components.values()
-            if c.render
-        ]
+        components_to_render = []
+        for c in self.components.values():
+            if c.render:
+                components_to_render.append((c.image_id, c.location, c.render_priority))
+        return components_to_render
 
     @property
     def components(self) -> dict[str, Component]:

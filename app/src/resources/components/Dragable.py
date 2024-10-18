@@ -85,27 +85,39 @@ class Dragable(Component):
             self.__drag = True
             self.render_priority += 1
 
+        for Zone in self.__zones:
+            Zone.set_highlight(True)
+
     def drop(self, x: int, y: int) -> None:
         """
         Drops the dragable component at the specified coordinates. If it collides with a registered zone,
         the component is centered within that zone. Sets the object to static, if the collided zone is 
-        marked as static. Resets the render priority.
+        marked as static. Resets the render priority. Deactivates all the highlights of zones.
 
         Args:
             x (int): The x-coordinate of the drop location.
             y (int): The y-coordinate of the drop location.
         """
         for i, zone in enumerate(self.__zones):
+
+            # Activate the zones highlight, if it has one
+            if zone.highlight:
+                zone.set_highlight(False)
+
+            # Update the zone and component, if the component can be dropped
             if zone.collide_point(x, y):
                 location = (
                     zone.location.x + (zone.size[0] - self.size[0]) / 2,
                     zone.location.y + (zone.size[1] - self.size[1]) / 2
                 )
+                # Set self to static, if the zone is indicated as static
                 if self.__static_zone[i]:
                     self.__static = True
+
                 self.__ancor = location
                 zone.add__occupant(self)
                 break
+
         self.location = self.__ancor
         self.__drag = False
         self.render_priority -= 1

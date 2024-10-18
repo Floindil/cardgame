@@ -4,6 +4,7 @@ from src.resources.components.Zone import Zone
 from src.resources.components.Dragable import Dragable
 from src.resources.components.Textfield import Textfield
 from src.scenes.Scene import Scene
+from src.core.Configuration import Assets
 
 class Cardgame(Scene):
     """
@@ -42,6 +43,7 @@ class Cardgame(Scene):
 
         testzone1 = Zone("testzone1", 200, 200, testzone_size[0], testzone_size[1])
         self.register_component(testzone1)
+        self.create_component_highlight(testzone1, color = "yellow")
 
         # create and register the test zone 1 image
         testzone2_image = pygame.Surface(testzone_size)
@@ -50,6 +52,7 @@ class Cardgame(Scene):
 
         testzone2 = Zone("testzone2", 500, 200, testzone_size[0], testzone_size[1])
         self.register_component(testzone2)
+        self.create_component_highlight(testzone1, color = "red")
 
         # Create and register a blank card image for testing
         card_image = pygame.Surface((50, 75))

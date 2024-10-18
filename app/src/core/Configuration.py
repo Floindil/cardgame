@@ -7,6 +7,8 @@ class Configuration:
     DISPLAYSIZE = (1200, 750)  # Screen size of the game window
     TITLE = "Cardgame"         # Title of the game window
     FPS = 60                   # Frames per second (frame rate) for the game
+    HIGHLIGHT_COLOR = "yellow" # Standard color for Component highlights
+    HIGHLIGHT_BORDER_WIDTH = 3 # Standard border width for Component highlights
 
 class Paths:
     """
@@ -26,20 +28,6 @@ class Assets:
         Constants for the button asset.
         """
         NAME = "button.png"
-        ID = NAME.replace(".png", "")
-
-    class FIELDZONE:
-        """
-        Constants for the field zone asset.
-        """
-        NAME = "fieldzone.png"
-        ID = NAME.replace(".png", "")
-
-    class GRAVEZONE:
-        """
-        Constants for the grave zone asset.
-        """
-        NAME = "gravezone.png"
         ID = NAME.replace(".png", "")
 
 class Card:
