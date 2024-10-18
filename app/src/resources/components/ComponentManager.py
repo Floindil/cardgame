@@ -132,11 +132,11 @@ class ComponentManager:
         Args:
             priority (int): The priority value to be checked and potentially updated.
         """
-        if priority == self.__dragable_priority:
+        if priority >= self.__dragable_priority:
             self.__dragable_priority = priority + 1
 
             for dragable in self.dragables:
-                dragable.RENDERPRIORITY = self.__dragable_priority
+                dragable.render_priority = self.__dragable_priority
 
     def get(self, ID: str) -> Component:
         """
@@ -160,15 +160,31 @@ class ComponentManager:
     @property
     def rendering_context(self) -> list[tuple[str, tuple[int, int], int]]:
         """
-        Gathers rendering information from all components that have the RENDER flag set to True.
+        Gathers rendering information from all components that have the RENDER flag set to True and orders them by
+        render_priority.
 
         Returns:
             list[tuple[str, tuple[int, int], int]]: A list of tuples containing the image_id, location, and render priority of each component to be rendered.
         """
         components_to_render = []
+
         for c in self.components.values():
             if c.render:
-                components_to_render.append((c.image_id, c.location, c.render_priority))
+
+                render_information = (c.image_id, c.location, c.render_priority)
+                inserted = False
+
+                if components_to_render:
+                    for i, values in enumerate(components_to_render):
+                        if c.render_priority <= values[2]:
+                            components_to_render.insert(i, render_information)
+                            inserted = True
+                            break
+                    if not inserted:
+                        components_to_render.append(render_information)
+                else:    
+                    components_to_render.append(render_information)
+
         return components_to_render
 
     @property

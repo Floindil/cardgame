@@ -225,8 +225,7 @@ class Scene:
 
     def get_rendering_context(self) -> list[tuple[pygame.Surface, tuple[int, int]]]:
         """
-        Retrieves the components to be rendered from the component manager and prepares
-        them for rendering based on their render priority.
+        Retrieves the components to be rendered from the component manager.
 
         Returns:
             list[tuple[pygame.Surface, tuple[int, int]]]: A list of tuples containing
@@ -234,7 +233,6 @@ class Scene:
         """
         render_context: list[tuple[pygame.Surface, tuple[int, int]]] = []
 
-        # Iterate through all the Scene's components that will be rendered
         for information in self.__componentManager.rendering_context:
             component_ID = information[0]
             location = information[1]
@@ -243,22 +241,7 @@ class Scene:
             image = self.__assetManager.get_image(component_ID)
             render_information = (image, location, priority)
 
-            # Insert the component into the list based on render priority
-            inserted = False
-            for i, context in enumerate(render_context):
-                c_priority = context[2]
-
-                if priority == 0:
-                    render_context.insert(0, render_information)
-                    inserted = True
-
-                if priority <= c_priority:
-                    render_context.insert(i + 1, render_information)
-                    inserted = True
-                    break
-
-            if not inserted:
-                render_context.append(render_information)
+            render_context.append(render_information)
 
         return render_context
 
