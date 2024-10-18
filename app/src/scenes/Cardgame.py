@@ -52,7 +52,7 @@ class Cardgame(Scene):
 
         testzone2 = Zone("testzone2", 500, 200, testzone_size[0], testzone_size[1])
         self.register_component(testzone2)
-        self.create_component_highlight(testzone1, color = "red")
+        self.create_component_highlight(testzone2, color = "red")
 
         # Create and register a blank card image for testing
         card_image = pygame.Surface((50, 75))

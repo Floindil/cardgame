@@ -210,7 +210,7 @@ class Component:
         """
         highlight = Component(id, location[0], location[1], size[0], size[1])
         highlight.render = False
-        highlight.render_priority = self.render_priority - 1
+        highlight.render_priority = self.render_priority + 1
         
         self.__highlight = highlight
 
@@ -236,6 +236,6 @@ class Component:
 
         image = pygame.Surface(size, pygame.SRCALPHA)
         rect = pygame.Rect(0, 0, size[0], size[1])
-        pygame.draw.rect(image, color, rect, border_width, 3)
+        pygame.draw.rect(image, color, rect, border_width, 10)
 
         return image
