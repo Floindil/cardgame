@@ -6,7 +6,6 @@ from src.resources.assets.AssetManager import AssetManager
 from src.resources.components.ComponentManager import ComponentManager
 from src.resources.components.Textfield import Textfield
 from src.resources.components.Component import Component
-from src.resources.components.Dragable import Dragable
 from src.resources.components.Button import Button
 
 class Scene:

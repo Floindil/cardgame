@@ -1,5 +1,5 @@
 import pygame
-from src.core.Eventhandler import Eventhandler
+from app.src.core.InputHandler import InputHandler
 from src.core.Renderer import Renderer
 from src.core.Configuration import Configuration as CFG
 from src.scenes.SceneManager import SceneManager
@@ -15,7 +15,7 @@ class Gameloop:
         Initializes a Gameloop object, all managers and the clock.
         """
         self.__clock = pygame.time.Clock()
-        self.__eventhandler = Eventhandler()
+        self.__inputhandler = InputHandler()
         self.__renderer = Renderer()
         self.__running = True
         self.__sceneManager = SceneManager()
@@ -29,7 +29,7 @@ class Gameloop:
         self.__clock.tick(CFG.FPS)
 
         # Run the event handler to process events
-        eventcontext = self.__eventhandler.run(pygame.event.get())
+        eventcontext = self.__inputhandler.run(pygame.event.get())
         running = eventcontext[0]
         event_string = eventcontext[1]
         mouselocation = eventcontext[2]

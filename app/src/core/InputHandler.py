@@ -1,8 +1,8 @@
 import pygame
 
-class Eventhandler:
+class InputHandler:
     """
-    The Eventhandler class is responsible for handling and processing all game events.
+    The InputHandler class is responsible for handling and processing all game events.
     It captures mouse and keyboard inputs and updates the internal state accordingly.
     """
 
@@ -10,7 +10,7 @@ class Eventhandler:
 
     def __init__(self) -> None:
         """
-        Initializes the Eventhandler by setting up the list to track pressed buttons.
+        Initializes the InputHandler by setting up the list to track pressed buttons.
         """
         self.__pressed_buttons = []
 
