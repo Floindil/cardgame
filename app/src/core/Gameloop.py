@@ -1,7 +1,7 @@
 import pygame
-from app.src.core.InputHandler import InputHandler
+from src.core.InputHandler import InputHandler
 from src.core.Renderer import Renderer
-from src.core.Configuration import Configuration as CFG
+from src.core.Configuration import Game as CFG
 from src.scenes.SceneManager import SceneManager
 
 class Gameloop:

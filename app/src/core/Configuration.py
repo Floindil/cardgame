@@ -1,6 +1,6 @@
 import pygame
 
-class Configuration:
+class Game:
     """
     Holds configuration constants for the game.
     """
@@ -9,6 +9,13 @@ class Configuration:
     FPS = 60                   # Frames per second (frame rate) for the game
     HIGHLIGHT_COLOR = "yellow" # Standard color for Component highlights
     HIGHLIGHT_BORDER_WIDTH = 3 # Standard border width for Component highlights
+
+class TAG:
+    COMPONENTS = "components"
+    BUTTONS = "buttons"
+    DRAGABLES = "dragables"
+    TEXTFIELDS = "textfields"
+    ZONES = "zones"
 
 class Paths:
     """

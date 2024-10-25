@@ -1,12 +1,27 @@
 import pygame
-from src.core.Configuration import Configuration as C
+from src.core.Configuration import Game as C, TAG
 
 class Component:
     """
     The Component class serves as a base for any object that can be displayed on the screen.
     It includes properties and methods for managing the object's position, size, and rendering attributes.
+
+    Atributes:
+        __popups (list[str]): A list of component ids and access types to use as popups to either add information or actions. Access types: 0 - hover, 1 - click
+        __highlight (str): Holds the id of a component that can be used as a highlight.
+        __rect (pygame.Rect): Keeps track of the location and boundries of the component.
+        __id (str): Unique id of the component.
+        __image_id (str): Unique id of the image associated with the component.
+        __update (bool): Indicates, if the component needs to be updated.
+        __active (bool): Indicates, if the components functions can be used active.
+        __render (bool): Indicates, if the component will be rendered to the screen.
+        __render_priority (int): Indicates the components place in the rendering sequence.
+        _image (pygame.Surface): Can hold a surface if needed.
+        _tag (str): Allows sorting of component groups by TAG.
+        _remove (bool): Indicates, that the component should be removed from the game.
     """
-    __highlight: 'Component'
+    __popups: list[list[str, int]]
+    __highlight: list[str, bool]
     __rect: pygame.Rect
     __id: str
     __image_id: str
@@ -29,6 +44,7 @@ class Component:
             width (int, optional): The width of the component. Defaults to 1.
             height (int, optional): The height of the component. Defaults to 1.
         """
+        self.__popups = []
         self.__highlight = None
         self.__render = True
         self.__render_priority = 0
@@ -38,7 +54,7 @@ class Component:
         self.__update = False
         self.__active = True
         self._image = pygame.Surface((1, 1))
-        self._tag = ""
+        self._tag = TAG.COMPONENTS
         self._remove = False
 
     @property
@@ -183,59 +199,71 @@ class Component:
         return pygame.Vector2(self.__rect.topleft)
 
     @property
-    def highlight(self) -> 'Component':
-        """Returns the highlight component associated with this component."""
+    def highlight(self) -> list[str, bool]:
+        """Returns the highlight values associated with this component."""
         return self.__highlight
 
     def set_highlight(self, state: bool) -> None:
         """Sets the rendering state of the highlight component."""
-        self.__highlight.render = state
+        self.__highlight[1] = state
     
     @property
     def highlight_id(self) -> str:
         """Returns the ID for the highlight component."""
         if self.highlight:
-            return self.highlight.ID
+            return self.highlight[0]
         else:
             return f"{self.ID}_highlight"
     
-    def create_highlight(self, id: str, location: tuple[int, int], size: tuple[int, int]) -> None:
+    def create_highlight(self, id: str, location: tuple[int, int], size: tuple[int, int]) -> 'Component':
         """
-        Creates a highlight component for the component.
+        Creates a highlight component and stores it's id and rendering state in the highlight attribute.
 
         Args:
             id (str): id for the highlight component
             location (tuple[int, int]): location of the highlight
             size (tuple[int, int]): size of the highlight
+
+        Returns:
+            Component: The newly created hightlight
         """
         highlight = Component(id, location[0], location[1], size[0], size[1])
         highlight.render = False
         highlight.render_priority = self.render_priority + 1
         
-        self.__highlight = highlight
+        self.__highlight = [highlight.ID, False]
+
+        return highlight
 
     def create_highlight_image(
             self,
             color: str = C.HIGHLIGHT_COLOR,
             border_width: int = C.HIGHLIGHT_BORDER_WIDTH
-        ) -> pygame.Surface:
+        ) -> tuple['Component', pygame.Surface]:
         """
-        Creates a highlight and image for the component.
+        Creates a highlight and an image for the component.
 
         Args:
             color (str): The color of the highlight border.
             border_width (int): The width of the highlight border.
 
         Returns:
-            pygame.Surface: The surface representing the highlight.
+            tuple: A tuple containing:
+                - Component: The created highlight component.
+                - pygame.Surface: The surface representing the highlight.
         """
         location = (self.location.x - border_width, self.location.y - border_width)
         size = (self.size[0] + 2 * border_width, self.size[1] + 2 * border_width)
         
-        self.create_highlight(self.highlight_id, location, size)
+        highlight = self.create_highlight(self.highlight_id, location, size)
 
         image = pygame.Surface(size, pygame.SRCALPHA)
         rect = pygame.Rect(0, 0, size[0], size[1])
         pygame.draw.rect(image, color, rect, border_width, 10)
 
-        return image
+        return highlight, image
+    
+    @property
+    def popups(self) -> list[list[str, int]]:
+        return self.__popups
+

@@ -1,5 +1,5 @@
 import pygame
-from src.core.Configuration import Configuration as CFG
+from src.core.Configuration import Game as CFG
 
 class Renderer:
     """

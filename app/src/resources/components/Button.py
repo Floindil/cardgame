@@ -1,6 +1,6 @@
 from src.resources.components.Component import Component
 from src.resources.components.Textfield import Textfield
-from src.core.Configuration import Fonts
+from src.core.Configuration import Fonts, TAG
 
 class Button(Component):
     """
@@ -61,7 +61,7 @@ class Button(Component):
             self.__action = self.__default_action
 
         self.__flag = False
-        self._tag = "button"
+        self._tag = TAG.BUTTONS
 
     @property
     def __location_tf(self) -> tuple[int, int]:

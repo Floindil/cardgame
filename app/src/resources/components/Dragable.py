@@ -1,18 +1,25 @@
+from pygame import Vector2
+
 from src.resources.components.Component import Component
-from src.resources.components.Zone import Zone
+from src.core.Configuration import TAG
 
 class Dragable(Component):
     """
     The Dragable class represents a draggable component in the game,
     inheriting from Component. It can be picked up, moved, and dropped
     into specified zones.
+
+    Atributes:
+        __drag (bool): Indicates if the object is currently being dragged
+        __static (bool): Indicates if the object can be dragged
+        __ancor (tuple[int, int]): Location to which the object returns when dropped
+        __zones (list[list[str,bool]]): Indicates where the object can be dropped and if it can be moved afterwards
     """
 
-    __drag: bool                # Indicates if the object is currently being dragged
-    __static: bool              # Indicates if the object can be dragged
-    __ancor: tuple[int, int]    # Location to which the object returns when dropped
-    __static_zone: list[bool]   # Indicates if the object can be moved from the corresponding zone
-    __zones: list[Zone]         # Zones where the object can be dropped (same indexes as __static_zone)
+    __drag: bool
+    __static: bool
+    __ancor: tuple[int, int]
+    __zones: list[list[str,bool]]
 
     def __init__(self, id: str, x: int, y: int, width: int = 1, height: int = 1) -> None:
         """
@@ -26,12 +33,20 @@ class Dragable(Component):
             height (int, optional): The height of the component. Defaults to 1.
         """
         super().__init__(id, x, y, width, height)
-        self._tag = "dragable"
+        self._tag = TAG.DRAGABLES
         self.__drag = False
         self.__static = False
         self.__ancor = self.location
-        self.__static_zone = []
         self.__zones = []
+
+    @property
+    def ancor(self) -> Vector2:
+        """Retunrs the ancor location of the dragable object."""
+        return self.__ancor
+    
+    @ancor.setter
+    def ancor(self, location: Vector2):
+        self.__ancor = location
 
     @property
     def static(self) -> bool:
@@ -42,6 +57,10 @@ class Dragable(Component):
             bool: True if the component is static, False otherwise.
         """
         return self.__static
+    
+    @static.setter
+    def static(self, state: bool) -> None:
+        self.__static = state
 
     @property
     def drag(self) -> bool:
@@ -52,8 +71,28 @@ class Dragable(Component):
             bool: True if the component is being dragged, False otherwise.
         """
         return self.__drag
+    
+    @drag.setter
+    def drag(self, state: bool) -> None:
+        self.__drag = state
+    
+    @property
+    def zone_ids(self) -> list[str]:
+        """Returns a list of all registered zone ids."""
+        ids = []
+        for zone in self.__zones:
+            ids.append(zone[0])
+        return ids
+    
+    def get_zone_static_state(self, zone_id: str) -> bool:
+        """Returns the static flag of the zone to indicate, if the dragable can
+        be moved out of that zone. Returns None if the id is not registered"""
+        for zone in self.__zones:
+            if zone[0] == zone_id:
+                return zone[1]
+        return None
 
-    def register_zone(self, zone: Zone, static: bool = False) -> None:
+    def register_zone(self, zone_id: str, static: bool = False) -> None:
         """
         Registers a zone that the dragable component can be dropped into.
 
@@ -61,63 +100,16 @@ class Dragable(Component):
             zone (Zone): The zone to be registered.
             static (bool, optional): Indicates if the component should become static when dropped in this zone. Defaults to False.
         """
-        if zone not in self.__zones:
-            self.__zones.append(zone)
-            self.__static_zone.append(static)
+        if zone_id not in self.__zones:
+            self.__zones.append([zone_id, static])
 
-    def unregister_zone(self, zone: Zone) -> None:
+    def unregister_zone(self, zone_id: str) -> None:
         """
         Unregisters a zone from the list of zones the dragable component can be dropped into.
 
         Args:
             zone (Zone): The zone to be unregistered.
         """
-        if zone in self.__zones:
-            index = self.__zones.index(zone)
+        if zone_id in self.zone_ids:
+            index = self.zone_ids.index(zone_id)
             self.__zones.pop(index)
-            self.__static_zone.pop(index)
-
-    def pick_up(self) -> None:
-        """
-        Marks the dragable component as being picked up and increases its render priority.
-        """
-        if not self.__static:
-            self.__drag = True
-            self.render_priority += 1
-
-        for Zone in self.__zones:
-            Zone.set_highlight(True)
-
-    def drop(self, x: int, y: int) -> None:
-        """
-        Drops the dragable component at the specified coordinates. If it collides with a registered zone,
-        the component is centered within that zone. Sets the object to static, if the collided zone is 
-        marked as static. Resets the render priority. Deactivates all the highlights of zones.
-
-        Args:
-            x (int): The x-coordinate of the drop location.
-            y (int): The y-coordinate of the drop location.
-        """
-        for i, zone in enumerate(self.__zones):
-
-            # Activate the zones highlight, if it has one
-            if zone.highlight:
-                zone.set_highlight(False)
-
-            # Update the zone and component, if the component can be dropped
-            if zone.collide_point(x, y):
-                location = (
-                    zone.location.x + (zone.size[0] - self.size[0]) / 2,
-                    zone.location.y + (zone.size[1] - self.size[1]) / 2
-                )
-                # Set self to static, if the zone is indicated as static
-                if self.__static_zone[i]:
-                    self.__static = True
-
-                self.__ancor = location
-                zone.add__occupant(self)
-                break
-
-        self.location = self.__ancor
-        self.__drag = False
-        self.render_priority -= 1

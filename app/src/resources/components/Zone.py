@@ -1,4 +1,5 @@
 from src.resources.components.Component import Component
+from src.core.Configuration import TAG
 
 class Zone(Component):
     """
@@ -20,7 +21,7 @@ class Zone(Component):
         """
         super().__init__(id, x, y, width, height)
         self.__occupant = None
-        self._tag = "zone"
+        self._tag = TAG.ZONES
 
     def add__occupant(self, object: Component) -> None:
         """

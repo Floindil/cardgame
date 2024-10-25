@@ -1,7 +1,7 @@
 import pygame
 
 from src.resources.components.Component import Component
-from src.core.Configuration import Fonts
+from src.core.Configuration import Fonts, TAG
 
 class Textfield(Component):
     """
@@ -43,7 +43,7 @@ class Textfield(Component):
         self.__color = pygame.Color(color)
         self.__fontsize = fontsize
         self.font = font
-        self._tag = "textfield"
+        self._tag = TAG.TEXTFIELDS
 
     @property
     def text(self) -> str:

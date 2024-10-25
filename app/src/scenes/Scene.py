@@ -1,7 +1,7 @@
 import pygame
 from typing import Type, Optional
 
-from src.core.Configuration import Assets, Configuration as C
+from src.core.Configuration import Assets, Game as C
 from src.resources.assets.AssetManager import AssetManager
 from src.resources.components.ComponentManager import ComponentManager
 from src.resources.components.Textfield import Textfield
@@ -277,10 +277,10 @@ class Scene:
             border_width (int): The width of the highlight border. Defaults to highlight border width from configuration.
         """
         # Create the highlight image for the component
-        image = component.create_highlight_image(color, border_width)
+        highlight, image = component.create_highlight_image(color, border_width)
         
         # Register the highlight component within the system
-        self.register_component(component.highlight)
+        self.register_component(highlight)
         
         # Register the highlight image with the corresponding highlight ID
         self.register_image(component.highlight_id, image)
@@ -294,5 +294,5 @@ class Scene:
 
         location = (component.location.x + delta_x, component.location.y + delta_y)
         
-        component.create_highlight(asset.ID, location, image.get_size())
-        self.register_component(component.highlight)
+        highlight = component.create_highlight(asset.ID, location, image.get_size())
+        self.register_component(highlight)

@@ -1,6 +1,8 @@
 from src.resources.components.Component import Component
 from src.resources.components.Dragable import Dragable
 from src.resources.components.Button import Button
+from src.resources.components.Zone import Zone
+from src.core.Configuration import TAG
 
 class ComponentManager:
     """
@@ -12,19 +14,14 @@ class ComponentManager:
         __other (dict[str, Component]): A dictionary to store other types of components with their IDs as keys.
         __dragable_priority (int): The priority value used to manage render priorities of dragable components.
     """
-
-    __buttons: dict[str, Button]
-    __dragables: dict[str, Dragable]
-    __other: dict[str, Component]
+    __components: dict[str, Component]
     __dragable_priority: int
 
     def __init__(self) -> None:
         """
         Initializes the ComponentManager with empty dictionaries for buttons, dragables, and other components.
         """
-        self.__buttons = {}
-        self.__dragables = {}
-        self.__other = {}
+        self.__components = {}
         self.__dragable_priority = 0
 
     def register(self, component: Component) -> None:
@@ -34,17 +31,12 @@ class ComponentManager:
         Args:
             component (Component): The component to register. It can be of type Button, Dragable, or any other type that inherits from Component.
         """
-        if isinstance(component, Button):
-            self.__buttons[component.ID] = component
-            self.update_dragable_priority(component.render_priority)
-
-        elif isinstance(component, Dragable):
+        if not self.__components.get(component.TAG):
+            self.__components.update({component.TAG: {}})
+        if component.TAG == TAG.DRAGABLES:
             component.render_priority = self.__dragable_priority
-            self.__dragables[component.ID] = component
-
-        else:
-            self.__other[component.ID] = component
-            self.update_dragable_priority(component.render_priority)
+        self.__components.get(component.TAG).update({component.ID:component})
+        self.update_dragable_priority(component.render_priority)
     
     def unregister(self, component: Component) -> None:
         """
@@ -53,14 +45,7 @@ class ComponentManager:
         Args:
             component (Component): The component to unregister. It can be of type Button, Dragable, or any other type that inherits from Component.
         """
-        if isinstance(component, Button):
-            self.__buttons.pop(component.ID)
-
-        elif isinstance(component, Dragable):
-            self.__dragables.pop(component.ID)
-
-        else:
-            self.__other.pop(component.ID)
+        self.__components[component.TAG].pop(component.ID)
 
     def update(self, interaction: bool, event: str, mouselocation: tuple[int, int]) -> list[tuple]:
         """
@@ -77,9 +62,8 @@ class ComponentManager:
 
         asset_updates = []
 
-        for entity in self.components:
-            c: Component = self.components.get(entity)
-
+        for id in self.components:
+            c: Component = self.components.get(id)
             # Unregister the component if it's marked for removal
             if c.remove:
                 self.unregister(c)
@@ -94,34 +78,38 @@ class ComponentManager:
                 c.location = (mouselocation[0] - c.size[0] / 2, mouselocation[1] - c.size[1] / 2)
 
         if interaction:
+
+            buttons: list[Button] = self.get_by_tag(TAG.BUTTONS)
+            dragables: list[Dragable] = self.get_by_tag(TAG.DRAGABLES)
+
             # Handle mouse button down event
             if "//m1d" in event:
                 # Check for button interactions
-                for button in self.buttons:
+                for button in buttons:
                     if button.collide_point(mouselocation[0], mouselocation[1]) and button.active:
                         button.flag = True
                         break
 
                 # Check for draggable interactions
-                for dragable in self.dragables:
+                for dragable in dragables:
                     if not dragable.static \
                     and dragable.collide_point(mouselocation[0], mouselocation[1]) \
                     and dragable.active:
-                        dragable.pick_up()
+                        self.__pick_up_dragable(dragable)
                         break
 
             # Handle mouse button up event
             if "//m1u" in event:
                 # Trigger button actions
-                for button in self.buttons:
+                for button in buttons:
                     if button.collide_point(mouselocation[0], mouselocation[1]) and button.flag:
                         button.action()
                     button.flag = False
 
                 # Drop draggable components
-                for dragable in self.dragables:
+                for dragable in dragables:
                     if not dragable.static and dragable.collide_point(mouselocation[0], mouselocation[1]):
-                        dragable.drop(mouselocation[0], mouselocation[1])
+                        self.__drop_dragable(dragable)
 
         return asset_updates
 
@@ -135,12 +123,14 @@ class ComponentManager:
         if priority >= self.__dragable_priority:
             self.__dragable_priority = priority + 1
 
-            for dragable in self.dragables:
-                dragable.render_priority = self.__dragable_priority
+            dragables = self.get_by_tag(TAG.DRAGABLES)
+            if dragables:
+                for dragable in dragables:
+                    dragable.render_priority = self.__dragable_priority
 
     def get(self, ID: str) -> Component:
         """
-        Retrieves a component from the stored dictionaries using its ID.
+        Retrieves a component from the stored dictionary using its ID.
 
         Args:
             ID (str): The ID of the component to retrieve.
@@ -148,14 +138,10 @@ class ComponentManager:
         Returns:
             Component: The component associated with the provided ID. Returns None if no component with the given ID is found.
         """
-        if ID in self.__buttons:
-            return self.__buttons.get(ID)
-
-        elif ID in self.__dragables:
-            return self.__dragables.get(ID)
-
-        else:
-            return self.__other.get(ID)
+        for tag in self.__components:
+            if self.__components[tag].get(ID):
+                return self.__components[tag].get(ID)
+        return None
 
     @property
     def rendering_context(self) -> list[tuple[str, tuple[int, int], int]]:
@@ -196,27 +182,62 @@ class ComponentManager:
             dict[str, Component]: A dictionary of all registered components, including buttons, dragables, and others.
         """
         components = {}
-        components.update(self.__buttons)
-        components.update(self.__dragables)
-        components.update(self.__other)
+        for component in self.__components.values():
+            components.update(component)
         return components
     
-    @property
-    def buttons(self) -> list[Button]:
+    def get_by_tag(self, tag: TAG) -> list[Component]:
         """
-        Retrieves all registered Button components.
+        Retrieves all registered components with the provided Tag.
 
         Returns:
-            list[Button]: A list of all Button components.
+            list[Component]: A list of all components with the provided Tag.
         """
-        return list(self.__buttons.values())
+        tagged_components = self.__components.get(tag)
+        if tagged_components:
+            return list(tagged_components.values())
+        return {}
     
-    @property
-    def dragables(self) -> list[Dragable]:
-        """
-        Retrieves all registered Dragable components.
+    def __pick_up_dragable(self, dragable: Dragable):
+        if not dragable.static:
+            dragable.drag = True
+            dragable.render_priority += 1
 
-        Returns:
-            list[Dragable]: A list of all Dragable components.
+            for zone_id in dragable.zone_ids:
+                zone: Zone = self.get(zone_id)
+                zone.set_highlight(True)
+
+    def __drop_dragable(self, dragable: Dragable) -> None:
         """
-        return list(self.__dragables.values())
+        Drops the dragable component at the specified coordinates. If it collides with a registered zone,
+        the component is centered within that zone. Sets the object to static, if the collided zone is 
+        marked as static. Resets the render priority. Deactivates all the highlights of zones.
+
+        Args:
+            x (int): The x-coordinate of the drop location.
+            y (int): The y-coordinate of the drop location.
+        """
+        for id in dragable.zone_ids:
+            zone: Zone = self.__components[TAG.ZONES].get(id)
+
+            # Activate the zones highlight, if it has one
+            if zone.highlight:
+                zone.set_highlight(False)
+
+            # Update the zone and component, if the component can be dropped
+            if zone.collide_point(dragable.location.x, dragable.location.y):
+                location = (
+                    zone.location.x + (zone.size[0] - dragable.size[0]) / 2,
+                    zone.location.y + (zone.size[1] - dragable.size[1]) / 2
+                )
+                # Set self to static, if the zone is indicated as static
+                if dragable.get_zone_static_state(id):
+                    dragable.static = True
+
+                dragable.ancor = location
+                zone.add__occupant(dragable)
+                break
+
+        dragable.location = dragable.ancor
+        dragable.drag = False
+        dragable.render_priority -= 1
