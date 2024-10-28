@@ -37,6 +37,10 @@ class Assets:
         NAME = "button.png"
         ID = NAME.replace(".png", "")
 
+class PopupTypes:
+    HOVER = 0
+    CLICK = 1
+
 class Card:
     """
     Holds constants related to Cards.

@@ -1,5 +1,5 @@
 import pygame
-from src.core.Configuration import Game as C, TAG
+from src.core.Configuration import Game as C, TAG, PopupTypes
 
 class Component:
     """
@@ -20,7 +20,7 @@ class Component:
         _tag (str): Allows sorting of component groups by TAG.
         _remove (bool): Indicates, that the component should be removed from the game.
     """
-    __popups: list[list[str, int]]
+    __popups: list[list[str, PopupTypes]]
     __highlight: list[str, bool]
     __rect: pygame.Rect
     __id: str
@@ -264,6 +264,7 @@ class Component:
         return highlight, image
     
     @property
-    def popups(self) -> list[list[str, int]]:
+    def popups(self) -> list[list[str, PopupTypes]]:
+        """Returns all registered component ids that can be used as a popup and the popup type."""
         return self.__popups
 

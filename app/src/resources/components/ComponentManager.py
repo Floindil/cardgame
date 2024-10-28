@@ -199,6 +199,14 @@ class ComponentManager:
         return {}
     
     def __pick_up_dragable(self, dragable: Dragable):
+        """
+        Picks up dragable components. If the component is not static, its drag flag is set to True and 
+        the render priority is incremented by 1 to ensure, the object will be rendered in the front.\n
+        Activates all the highlight components registered to the dragable component.
+
+        Args:
+            dragable (Dragable): Dragable component to be picked up.
+        """
         if not dragable.static:
             dragable.drag = True
             dragable.render_priority += 1
@@ -209,13 +217,12 @@ class ComponentManager:
 
     def __drop_dragable(self, dragable: Dragable) -> None:
         """
-        Drops the dragable component at the specified coordinates. If it collides with a registered zone,
-        the component is centered within that zone. Sets the object to static, if the collided zone is 
+        Drops dragable components at the specified coordinates. If they collide with a registered zone,
+        the component is centered within that zone. Sets the component to static, if the collided zone is 
         marked as static. Resets the render priority. Deactivates all the highlights of zones.
 
         Args:
-            x (int): The x-coordinate of the drop location.
-            y (int): The y-coordinate of the drop location.
+            dragable (Dragable): Dragable component to be dropped.
         """
         for id in dragable.zone_ids:
             zone: Zone = self.__components[TAG.ZONES].get(id)
