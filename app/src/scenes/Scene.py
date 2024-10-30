@@ -275,14 +275,14 @@ class Scene:
             component (Component): The component to which the highlight will be added.
             color (str): The color of the highlight border. Defaults to highlight color from configuration.
             border_width (int): The width of the highlight border. Defaults to highlight border width from configuration.
-        """
-        # Create the highlight image for the component
-        highlight, image = component.create_highlight_image(color, border_width)
-        
-        # Register the highlight component within the system
+        """        
+        # Create and register the highlight component within the system
+        location = (component.location.x - border_width, component.location.y - border_width)
+        highlight = component.create_highlight(component.highlight_id, location, component.size)
         self.register_component(highlight)
         
-        # Register the highlight image with the corresponding highlight ID
+        # Create and register the highlight image for the component
+        image = component.create_highlight_image(color, border_width)
         self.register_image(component.highlight_id, image)
     
     def add_component_highlight(self, component: Component, asset: Assets) -> None:

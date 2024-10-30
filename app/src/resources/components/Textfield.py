@@ -7,19 +7,21 @@ class Textfield(Component):
     """
     This class provides functionalities to create and manage Textfields.
     """
-    __text: str
+    __textlines: list[str]
     __font: pygame.font.Font
     __color: pygame.Color
+    __bgcolor: pygame.Color
 
     def __init__(
             self,
             id: str,
             x: int,
             y: int,
-            text: str = None,
+            textlines: list[str] = None,
             font: str = Fonts.STANDARDFONT,
             fontsize: int = Fonts.STANDARDSIZE,
-            color: str = Fonts.STANDARDCOLOR
+            fontcolor: str = Fonts.STANDARDCOLOR,
+            bgcolor: str = None
         ) -> None:
         """
         Creates a Textfield object. This object can display any text.
@@ -37,32 +39,38 @@ class Textfield(Component):
             color (str): if no colot is provided, black will be used
         """
         super().__init__(id, x, y)
-        if not text:
-            text = id
-        self.__text = text
-        self.__color = pygame.Color(color)
+        self.__bgcolor = None
+        if bgcolor:
+            self.__bgcolor = pygame.Color(bgcolor)
+        if not textlines:
+            self.__textlines = [id]
+        else:
+            self.__textlines = textlines
+        self.__color = pygame.Color(fontcolor)
         self.__fontsize = fontsize
         self.font = font
         self._tag = TAG.TEXTFIELDS
+            
 
     @property
-    def text(self) -> str:
+    def textlines(self) -> str:
         """Returns the text of the associated Textfield object."""
-        return self.__text
+        return self.__textlines
     
-    @text.setter
-    def text(self, text: str) -> None:
+    @textlines.setter
+    def textlines(self, textlines: list[str]) -> None:
         """
         Checks, if the provided text is of type str and sets it to
         the text attribute.\n
         Recreates the objects image with the new text.
 
         Args:
-            text (str): new text to be displayed
+            textlines (list[str]): new text to be displayed
         """
-        if not isinstance(text, str):
-            raise TypeError("> variable must be str type!")
-        self.__text = text
+        for line in textlines:
+            if not isinstance(line, str):
+                raise TypeError("> variable must be str type!")
+        self.__textlines = textlines
         self.__create_image()
 
     @property
@@ -135,7 +143,27 @@ class Textfield(Component):
         The color attribute of the Textfield object will be used for the 
         color parameter. 
         """
-        self._image = self.__font.render(self.__text, True, self.__color)
-        image_size = self._image.get_size()
-        self.size = image_size[0], image_size[1]
+        parts = []
+        width = 0
+        height = 0
+
+        for i, line in enumerate(self.__textlines):
+            image = self.__font.render(line, True, self.__color, self.__bgcolor)
+            parts.append((image, height))
+
+            size = image.get_size()
+
+            if size[0] > width:
+                width = size[0]
+
+            height += size[1]
+            if i+1 < len(self.textlines):
+                height += Fonts.LINEBUFFER
+
+        self.size = width, height
+        self._image = pygame.Surface(self.size, pygame.SRCALPHA)
+        if self.__bgcolor:
+            self._image.fill(self.__bgcolor)
+        for part in parts:
+            self.image.blit(part[0], (0, part[1]))
         self._set_update()

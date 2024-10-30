@@ -16,6 +16,7 @@ class TAG:
     DRAGABLES = "dragables"
     TEXTFIELDS = "textfields"
     ZONES = "zones"
+    POPUP = "popup"
 
 class Paths:
     """
@@ -51,8 +52,9 @@ class Fonts:
     """
     Holds font constants used in the game.
     """
-    STANDARDFONT = 'Trebuchet MS'
+    STANDARDFONT = 'Lucida Console'
     STANDARDSIZE = 20
+    LINEBUFFER = 3
     STANDARDCOLOR = "white"
     BUTTONCOLOR = "black"
     TREBUCHET = 'Trebuchet MS'

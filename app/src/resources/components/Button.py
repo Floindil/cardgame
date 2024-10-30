@@ -12,7 +12,6 @@ class Button(Component):
 
     __textfield: Textfield
     __action: callable
-    __flag: bool
 
     def __init__(
             self,
@@ -23,7 +22,7 @@ class Button(Component):
             height: int,
             action: callable = None,
             text_color: str = Fonts.BUTTONCOLOR,
-            text: str = None,
+            text_lines: list[str] = None,
             image_id: str = None
         ) -> None:
         """
@@ -44,9 +43,9 @@ class Button(Component):
             provided, the Button ID will be used as image ID.
         """
         super().__init__(id, x, y, width, height)
-        if not text:
-            text = self.ID
-        self.__textfield = Textfield(f"{id}_tf", 0, 0, text = text, color = text_color)
+        if not text_lines:
+            text_lines = [self.ID]
+        self.__textfield = Textfield(f"{id}_tf", 0, 0, textlines = text_lines, fontcolor = text_color)
         self.__textfield.render_priority = self.render_priority + 1
         self.__textfield.location = self.__location_tf
 
@@ -60,7 +59,6 @@ class Button(Component):
         else:
             self.__action = self.__default_action
 
-        self.__flag = False
         self._tag = TAG.BUTTONS
 
     @property
@@ -73,16 +71,6 @@ class Button(Component):
     @property
     def textfield(self) -> Textfield:
         return self.__textfield
-
-    @property
-    def flag(self) -> tuple[bool, bool]:
-        """Returns the flag boolean."""
-        return self.__flag
-    
-    @flag.setter
-    def flag(self, bool: bool):
-        """Sets the flag boolean."""
-        self.__flag = bool
     
     def action(self) -> None:
         """Calls the action set in the action attribute."""

@@ -2,7 +2,7 @@ from src.resources.components.Component import Component
 from src.resources.components.Dragable import Dragable
 from src.resources.components.Button import Button
 from src.resources.components.Zone import Zone
-from src.core.Configuration import TAG
+from src.core.Configuration import TAG, PopupTypes
 
 class ComponentManager:
     """
@@ -62,8 +62,7 @@ class ComponentManager:
 
         asset_updates = []
 
-        for id in self.components:
-            c: Component = self.components.get(id)
+        for c in self.components:
             # Unregister the component if it's marked for removal
             if c.remove:
                 self.unregister(c)
@@ -77,39 +76,55 @@ class ComponentManager:
             if isinstance(c, Dragable) and c.drag:
                 c.location = (mouselocation[0] - c.size[0] / 2, mouselocation[1] - c.size[1] / 2)
 
-        if interaction:
+            # check for popups to activate or deactivate
+            if c.popups:
+                for popup_id in c.popups:
+                    popup = self.get(popup_id)
+                    collide = c.collide_point(mouselocation[0], mouselocation[1])
+                    popup_type = c.get_popup_type(popup_id)
 
-            buttons: list[Button] = self.get_by_tag(TAG.BUTTONS)
-            dragables: list[Dragable] = self.get_by_tag(TAG.DRAGABLES)
+                    if collide and popup_type == PopupTypes.HOVER:
+                        popup.render = True
+                        popup.active = True
+                        self.set_highlight_state(popup.highlight_id, True)
+
+                    else:
+                        popup.render = False
+                        popup.active = False
+                        self.set_highlight_state(popup.highlight_id, False)
+                        
+
+        if interaction:
 
             # Handle mouse button down event
             if "//m1d" in event:
-                # Check for button interactions
-                for button in buttons:
-                    if button.collide_point(mouselocation[0], mouselocation[1]) and button.active:
-                        button.flag = True
-                        break
+                # Check for component interactions
+                for c in self.components:
+                    collide = c.collide_point(mouselocation[0], mouselocation[1])
+                    if collide and c.active:
+                        c.flag = True
 
-                # Check for draggable interactions
-                for dragable in dragables:
-                    if not dragable.static \
-                    and dragable.collide_point(mouselocation[0], mouselocation[1]) \
-                    and dragable.active:
-                        self.__pick_up_dragable(dragable)
-                        break
+                    if isinstance(c, Dragable):
+                        if not c.static and collide and c.active:
+                            self.__pick_up_dragable(c)
 
             # Handle mouse button up event
             if "//m1u" in event:
-                # Trigger button actions
-                for button in buttons:
-                    if button.collide_point(mouselocation[0], mouselocation[1]) and button.flag:
-                        button.action()
-                    button.flag = False
+                
+                for c in self.components:
+                    collide = c.collide_point(mouselocation[0], mouselocation[1])
 
-                # Drop draggable components
-                for dragable in dragables:
-                    if not dragable.static and dragable.collide_point(mouselocation[0], mouselocation[1]):
-                        self.__drop_dragable(dragable)
+                    if collide and c.flag:
+                        # Trigger button actions
+                        if isinstance(c, Button):
+                            c.action()
+
+                    c.flag = False
+
+                    # Drop draggable components
+                    if isinstance(c, Dragable):
+                        if not c.static and collide and c.active:
+                            self.__drop_dragable(c)
 
         return asset_updates
 
@@ -154,7 +169,7 @@ class ComponentManager:
         """
         components_to_render = []
 
-        for c in self.components.values():
+        for c in self.components:
             if c.render:
 
                 render_information = (c.image_id, c.location, c.render_priority)
@@ -174,17 +189,17 @@ class ComponentManager:
         return components_to_render
 
     @property
-    def components(self) -> dict[str, Component]:
+    def components(self) -> dict[Component]:
         """
         Retrieves all registered components as a dictionary.
 
         Returns:
-            dict[str, Component]: A dictionary of all registered components, including buttons, dragables, and others.
+            dict[Component]: A dictionary of all registered components, including buttons, dragables, and others.
         """
         components = {}
         for component in self.__components.values():
             components.update(component)
-        return components
+        return components.values()
     
     def get_by_tag(self, tag: TAG) -> list[Component]:
         """
@@ -213,7 +228,9 @@ class ComponentManager:
 
             for zone_id in dragable.zone_ids:
                 zone: Zone = self.get(zone_id)
-                zone.set_highlight(True)
+                # Deactivate the zones highlight, if it has one
+                if zone.highlight:
+                    self.set_highlight_state(zone.highlight_id, True)
 
     def __drop_dragable(self, dragable: Dragable) -> None:
         """
@@ -229,7 +246,7 @@ class ComponentManager:
 
             # Activate the zones highlight, if it has one
             if zone.highlight:
-                zone.set_highlight(False)
+                self.set_highlight_state(zone.highlight_id, False)
 
             # Update the zone and component, if the component can be dropped
             if zone.collide_point(dragable.location.x, dragable.location.y):
@@ -247,4 +264,10 @@ class ComponentManager:
 
         dragable.location = dragable.ancor
         dragable.drag = False
-        dragable.render_priority -= 1
+        dragable.render_priority -= 1    
+
+    def set_highlight_state(self, highlight_id: str, state: bool) -> None:
+        """Sets the rendering state of the highlight component."""
+        highlight = self.get(highlight_id)
+        if highlight:
+            highlight.render = state

@@ -46,6 +46,16 @@ class Start(Scene):
         )
         self.register_button(start_button)
 
+        sb_popup = Textfield("sb_popup", 0, 0, ["Popup for the","Start Button"], bgcolor = "dark grey")
+        sb_popup_x = start_button.location.x + (start_button.size[0] - sb_popup.size[0])/2
+        sb_popup_y = start_button.location.y - sb_popup.size[1] - 5
+        sb_popup.location = (sb_popup_x, sb_popup_y)
+        sb_popup.render = False
+        self.create_component_highlight(sb_popup, color = "blue")
+        self.register_textfield(sb_popup)
+
+        start_button.add_popup(sb_popup.ID, 0, False)
+
         # Create and register the exit button
         exit_button = Button(
             "EXIT",

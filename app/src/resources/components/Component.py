@@ -7,7 +7,8 @@ class Component:
     It includes properties and methods for managing the object's position, size, and rendering attributes.
 
     Atributes:
-        __popups (list[str]): A list of component ids and access types to use as popups to either add information or actions. Access types: 0 - hover, 1 - click
+        __popups (dict[PopupTypes, bool]): A dict of component ids and access types to use as 
+            popups to either add information or actions. Access types: 0 - hover, 1 - click
         __highlight (str): Holds the id of a component that can be used as a highlight.
         __rect (pygame.Rect): Keeps track of the location and boundries of the component.
         __id (str): Unique id of the component.
@@ -20,11 +21,12 @@ class Component:
         _tag (str): Allows sorting of component groups by TAG.
         _remove (bool): Indicates, that the component should be removed from the game.
     """
-    __popups: list[list[str, PopupTypes]]
+    __popups: dict[PopupTypes, bool]
     __highlight: list[str, bool]
     __rect: pygame.Rect
     __id: str
     __image_id: str
+    __flag: bool
     __update: bool
     __active: bool
     __render: bool
@@ -44,13 +46,14 @@ class Component:
             width (int, optional): The width of the component. Defaults to 1.
             height (int, optional): The height of the component. Defaults to 1.
         """
-        self.__popups = []
+        self.__popups = {}
         self.__highlight = None
         self.__render = True
         self.__render_priority = 0
         self.__rect = pygame.Rect(x, y, width, height)
         self.__id = id
         self.__image_id = id
+        self.__flag = False
         self.__update = False
         self.__active = True
         self._image = pygame.Surface((1, 1))
@@ -97,6 +100,16 @@ class Component:
         Components with priority 0 will be rendered first (bottom layer).
         """
         self.__render_priority = priority
+
+    @property
+    def flag(self) -> tuple[bool, bool]:
+        """Returns the flag boolean."""
+        return self.__flag
+    
+    @flag.setter
+    def flag(self, bool: bool):
+        """Sets the flag boolean."""
+        self.__flag = bool
     
     @property
     def active(self) -> bool:
@@ -202,10 +215,6 @@ class Component:
     def highlight(self) -> list[str, bool]:
         """Returns the highlight values associated with this component."""
         return self.__highlight
-
-    def set_highlight(self, state: bool) -> None:
-        """Sets the rendering state of the highlight component."""
-        self.__highlight[1] = state
     
     @property
     def highlight_id(self) -> str:
@@ -239,32 +248,45 @@ class Component:
             self,
             color: str = C.HIGHLIGHT_COLOR,
             border_width: int = C.HIGHLIGHT_BORDER_WIDTH
-        ) -> tuple['Component', pygame.Surface]:
+        ) -> pygame.Surface:
         """
-        Creates a highlight and an image for the component.
+        Creates a highlight image for the component.
 
         Args:
             color (str): The color of the highlight border.
             border_width (int): The width of the highlight border.
 
         Returns:
-            tuple: A tuple containing:
-                - Component: The created highlight component.
-                - pygame.Surface: The surface representing the highlight.
+            pygame.Surface: The surface representing the highlight image.
         """
-        location = (self.location.x - border_width, self.location.y - border_width)
         size = (self.size[0] + 2 * border_width, self.size[1] + 2 * border_width)
-        
-        highlight = self.create_highlight(self.highlight_id, location, size)
 
         image = pygame.Surface(size, pygame.SRCALPHA)
         rect = pygame.Rect(0, 0, size[0], size[1])
         pygame.draw.rect(image, color, rect, border_width, 10)
 
-        return highlight, image
+        return image
     
     @property
-    def popups(self) -> list[list[str, PopupTypes]]:
-        """Returns all registered component ids that can be used as a popup and the popup type."""
+    def popups(self) -> list[dict[PopupTypes, bool]]:
+        """Returns all registered component ids that can be 
+        used as a popup and the popup type and state."""
         return self.__popups
 
+    def add_popup(self, id: str, type: PopupTypes, state: bool) -> None:
+        """Adds a component id to be used as a popup, together with a 
+        type of activation and the current state of the popup."""
+        self.__popups.update({id: [type, state]})
+
+    def get_popup_type(self, id: str) -> PopupTypes:
+        if self.__popups.get(id):
+            return self.__popups[id][0]
+        else:
+            print("no such popup registered")
+            return None
+    
+    def set_popup_state(self, id: str, state: bool) -> None:
+        if self.__popups.get(id):
+            self.__popups[id][1] = state
+        else:
+            print("no such popup registered")
