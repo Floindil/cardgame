@@ -58,7 +58,7 @@ class Menu(Scene):
 
         # Update the text of the input control text field with the last event
         textfield: Textfield = self.get_component("inputcontrol")
-        textfield.text = self.last_event
+        textfield.textlines = [self.last_event]
 
     def startmenu(self) -> None:
         """
